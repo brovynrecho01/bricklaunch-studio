@@ -106,6 +106,47 @@ flowchart LR
 
 ---
 
+## Agent Behavioral Smart Contracts & SOP Engine
+
+Untuk memastikan seluruh 7 divisi selalu menghasilkan deliverable **publish-ready berstandar agensi** (bukan ringkasan pendek 4–5 baris atau klise marketing generik), setiap agent kini terikat pada **Behavioral Smart Contract** ketat yang didefinisikan di [`src/lib/agents/behavioralContracts.ts`](./src/lib/agents/behavioralContracts.ts) dan diinjeksi langsung ke pipeline 3-tahap pada [`src/app/api/orchestrate/route.ts`](./src/app/api/orchestrate/route.ts).
+
+### Prinsip Kontrak Perilaku Global (`GLOBAL_AGENCY_RULES`)
+1. **Zero-Fluff & Anti-Generic Rule:** Melarang kalimat filler generik, placeholder kosong (`[isi di sini]`), atau bullet 1 baris tanpa konteks nyata.
+2. **Autonomous Brief Expansion:** Bahkan jika CEO hanya mengetik 3–6 kata (mis. *"Jual ebook panduan fatloss untuk pemula"*), setiap agent wajib mengekspansi avatar pembeli, skenario harian, modul nyata, dan angka finansial IDR secara otonom.
+3. **Cross-Agent Context Passing (3-Stage Grounded Pipeline):**
+   - **Stage 1 (Paralel):** Raka (Finance), Sora (Social Media), dan Nadia (HR) menerima dossier psikologi lengkap dari Maya.
+   - **Stage 2 (Grounded Copywriting):** Leo menerima **Pain Points, 3 Hidden Objections & 5 VoC Phrases Maya** *sekaligus* **3-Tier Harga Exact IDR & Promo Early-Bird Raka**, sehingga copy landing page & Post 7/7 sinkron 100% tanpa kontradiksi.
+   - **Stage 3 (Genuine 5-Dimension QC Audit):** Bima menerima seluruh output nyata Maya, Leo, Sora, Raka, dan Nadia untuk mengeluarkan skor per divisi dan Sertifikat Audit resmi.
+
+### Kontrak & Kalibrasi Parameter per Divisi
+
+| Agent | Temp | Token Budget | Struktur Output Wajib dalam Smart Contract |
+| :--- | :---: | :---: | :--- |
+| **Alex** (`manager`) | `0.7` | `4,096` | Executive Creative Brief (*Core Promise, Unique Mechanism, Primary Avatar*) + 3 Angle kontras (*Pain/Anti-Mainstream*, *Speed/Shortcut*, *Identity/Lifestyle*) lengkap dengan rasional **`whyItConverts`**. |
+| **Maya** (`researcher`) | `0.4` | `4,096` | Target Avatar Profile + **5 Visceral Pain Points** (*External* & *Internal*) + **3 Hidden Objections & Neutralizers** + Competitor Gap Analysis + **5 Exact Voice-of-Customer (VoC) Phrases**. |
+| **Leo** (`copywriter`) | `0.7` | `8,192` | **A.** Full Landing Page Script **8 seksi lengkap (500–750+ kata)**; **B.** **7-Post Connected Launch Thread** (`1/7`–`7/7`); **C.** **45–60s Video Script** dengan timestamp eksplisit + `[VISUAL]`, `[TEXT ON SCREEN]`, `[VOICEOVER]`. |
+| **Sora** (`social`) | `0.7` | `4,096` | Tabel Markdown **Day 1–Day 7 Multi-Platform Content Calendar** (TikTok, IG Reels, X/Threads, LinkedIn) dengan *Exact Scroll-Stopping Hook* + **3 Community Growth Tactics** (termasuk funnel Comment-to-DM). |
+| **Raka** (`finance`) | `0.4` | `4,096` | **3-Tier Pricing Architecture (IDR)** + Early-Bird Strategy + Unit Economics (fee, CAC organik/ads, Gross & Net Margin %) + BEP + **Tabel Proyeksi Bulan 1 (3 Skenario: Conservative, Realistic, Optimistic)**. |
+| **Nadia** (`hr`) | `0.4` | `4,096` | Timeline SOP **`H-3`, `H-0`, `H+1..H+7`** + **Buyer Response SLA Matrix Table** (WhatsApp, DM, Email + eskalasi) + **3-Step Post-Purchase Onboarding Flow** (`T+0`, `Day-1`, `Day-5`). |
+| **Bima** (`qc`) | `0.4` | `4,096` | Audit **5 Dimensi Lintas Divisi** + **Product QC Certificate** (Skor `/100`, mini-skor 5 divisi, *Copy vs Pricing*, *Social vs Funnel*, *SOP vs SLA*, *Strengths*, *Refinement Notes*) + **BAB 7 Go-Live Sign-Off**. |
+
+### Metrik Perbandingan Kapasitas Output Agent: Sebelum vs. Sesudah Behavioral Smart Contracts
+
+| Dimensi Evaluasi | Sebelum Smart Contracts *(v1/v2)* | Sesudah Smart Contracts *(v3 Agency-Grade)* | Peningkatan Kapasitas |
+| :--- | :--- | :--- | :--- |
+| **Batas Token Output (`maxOutputTokens`)** | `1,200` token (dibagi bersama untuk 7 divisi dalam 1 panggilan) | `4,096` token/divisi & **`8,192` token khusus Leo** (total kapasitas hingga `28,672` token/misi) | **~24× kapasitas konteks output** |
+| **Kalibrasi Temperatur Model** | Seragam `0.7` untuk semua agent (termasuk Finance & QC) | Terkalibrasi per peran: `0.7` (Kreatif: Alex, Leo, Sora) · `0.4` (Analitis/Audit: Maya, Raka, Nadia, Bima) | **Presisi angka & audit jauh lebih konsisten** |
+| **Kedalaman Landing Page (Leo)** | Ringkasan singkat 4–5 baris (~60–90 kata), struktur bebas | **8 Seksi Lengkap publish-ready** (`500–750+ kata`) termasuk Value Stack, Before/After & FAQ keberatan | **~8× lebih mendalam & siap langsung tayang** |
+| **Utas Peluncuran & Skrip Video (Leo)** | 5 post ringkas + 3 baris skrip video tanpa arahan produksi | **Tepat 7 Post terhubung** + **Skrip Video 45–60d bertimestamp** lengkap dengan `[VISUAL]`, `[TEXT ON SCREEN]`, `[VOICEOVER]` | **100% siap rekam & publish tanpa tulis ulang** |
+| **Riset Pasar & Psikologi (Maya)** | Paragraf ringkasan 4–6 kalimat umum | 5 Bagian terstruktur: Avatar, 5 External/Internal Pain Points, 3 Hidden Objections + Neutralizer, Gap Analysis, 5 VoC Phrases | **~6× kedalaman psikologi pembeli** |
+| **Kalender Social Media (Sora)** | 4–5 bullet ringkas tanpa hook konkret | **Tabel Markdown H1–H7** lintas 4 platform + exact hook + **3 taktik funnel komunitas** (auto-DM, poll, lead magnet) | **Eksekusi distribusi siap jalan 7 hari penuh** |
+| **Pemodelan Keuangan (Raka)** | 2–3 baris kisaran harga & estimasi kasar | **3-Tier IDR Architecture**, Early-Bird, Unit Economics (CAC/Margin), BEP exact & **Tabel Proyeksi 3 Skenario Bulan 1** | **Setara dokumen financial plan agensi** |
+| **Operasional & SLA (Nadia)** | 3–4 bullet SOP umum | Timeline `H-3 / H-0 / H+1..H+7` + **Matriks SLA per kanal** + **Onboarding 3-Tahap** penekan refund | **Zero operational blind-spot saat launch** |
+| **Sinkronisasi Lintas Divisi & Audit (Bima)** | 1 panggilan tunggal tanpa konteks nyata antar-divisi; QC generik | **Cross-Agent Context Passing nyata** (Maya + Raka → Leo → Bima) + **Audit 5 Dimensi & Mini-Skor per Divisi** | **Zero inkonsistensi harga vs copy; audit terverifikasi** |
+| **Reliabilitas Parsing Markdown Panjang** | Rentan gagal JSON escaping pada naskah panjang | Delimiter blok eksplisit (`<<<LANDING_PAGE>>>`, `<<<LAUNCH_THREAD>>>`, `<<<VIDEO_SCRIPT>>>`) untuk aset long-form | **100% tahan format tabel, kutipan & Markdown kaya** |
+
+---
+
 ## Detail Profil Kantor Virtual 3D — Kampus Dual-Wing (24m × 10m)
 
 Kantor virtual **BrickLaunch Studio** membentang luas **24m × 10m** pada sumbu X (`X: [-12, +12]`, `Z: [-5, +5]`) menggunakan dua instans `office_room.glb` yang dihubungkan oleh **partisi kaca arsitektural di `X = 0`** dan **pintu berengsel otomatis ber-sensor jarak (`2.2m`) di `[0, 0, -0.5]`**:
@@ -184,16 +225,21 @@ bricklaunch-studio/
     │   └── page.tsx                    # Entrypoint Client-Safe 3D Studio + HUD
     ├── components/
     │   ├── 3d/
-    │   │   ├── LegoAgent.tsx           # Animasi minifigure, pose duduk & speech cloud 3D
-    │   │   ├── OfficeEnvironment.tsx   # Ruangan 12x10m, 3 meja + kursi, pantry & copier
-    │   │   └── VirtualOfficeCanvas.tsx # R3F Canvas (dpr 1..1.5), lighting & CameraRig
+    │   │   ├── agentLivePositions.ts   # Registry posisi 60fps untuk sensor pintu otomatis 2.2m
+    │   │   ├── LegoAgent.tsx           # Animasi 7 minifigure, pose duduk, waypoint pintu & cloud 3D
+    │   │   ├── OfficeEnvironment.tsx   # Kampus Dual-Wing 24x10m, 7 meja + kursi, pintu otomatis, pantry & copier
+    │   │   └── VirtualOfficeCanvas.tsx # R3F Canvas (dpr 1..1.5), lighting & 4 preset kamera
     │   └── ui/
     │       ├── BrickLaunchLogo.tsx     # Komponen SVG Icon & Horizontal Header Lockup
-    │       └── CeoCommandHud.tsx       # Glassmorphism HUD, Live Demo, Chat, Modal & Drawer
+    │       └── CeoCommandHud.tsx       # Glassmorphism HUD, Live Demo, Chat Revisi 7 Divisi & 7-BAB .md Export
     ├── lib/
-    │   └── geminiServer.ts             # Server-only Gemini client + failover model chain
+    │   ├── agents/
+    │   │   └── behavioralContracts.ts  # Smart Contracts, SOP ketat, kalibrasi temp & token budget 7 agent
+    │   ├── assetPath.ts                # Helper basePath untuk localhost, Vercel & GitHub Pages
+    │   ├── geminiServer.ts             # Server-only Gemini client + failover model chain
+    │   └── staticDemoEngine.ts         # Engine showcase statis berstandar agensi 7-BAB (GitHub Pages)
     └── store/
-        └── useAgencyStore.ts           # Zustand multi-agent & 3D spatial choreography store
+        └── useAgencyStore.ts           # Zustand multi-agent & Dual-Wing spatial choreography store
 ```
 
 ---

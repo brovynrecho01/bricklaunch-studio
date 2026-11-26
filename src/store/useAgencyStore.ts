@@ -85,6 +85,7 @@ export interface MarketingAngle {
   title: string;
   hook: string;
   targetAudience: string;
+  whyItConverts?: string;
 }
 
 export interface ResearchSource {
@@ -98,6 +99,15 @@ export interface QcCertificate {
   copyVsPricing: string;
   socialVsFunnel: string;
   sopVsSla: string;
+  divisionScores?: {
+    maya?: number;
+    leo?: number;
+    sora?: number;
+    raka?: number;
+    nadia?: number;
+  };
+  strengths?: string[];
+  refinementNotes?: string[];
   auditorSignOff: string;
 }
 
@@ -462,6 +472,7 @@ export interface AgencyStore {
 
   workflowPhase: WorkflowPhase;
   ceoBrief: string;
+  executiveBrief: string;
   researchSummary: string;
   researchSources: ResearchSource[];
   managerReport: string;
@@ -513,6 +524,7 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
   activeSpeakerId: null,
   workflowPhase: "IDLE",
   ceoBrief: "",
+  executiveBrief: "",
   researchSummary: "",
   researchSources: [],
   managerReport: "",
@@ -1016,6 +1028,7 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
 
     set({
       ceoBrief: trimmed,
+      executiveBrief: "",
       workflowPhase: "RESEARCHING",
       researchSummary: "",
       researchSources: [],
@@ -1162,6 +1175,7 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
 
       set({
         workflowPhase: "AWAITING_CEO_APPROVAL",
+        executiveBrief: data.executiveBrief || "",
         researchSummary: data.researchSummary || "",
         researchSources: Array.isArray(data.researchSources) ? data.researchSources : [],
         managerReport: data.managerReport || "",
@@ -1448,6 +1462,7 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
       activeSpeakerId: null,
       workflowPhase: "IDLE",
       ceoBrief: "",
+      executiveBrief: "",
       researchSummary: "",
       researchSources: [],
       managerReport: "",

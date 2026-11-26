@@ -454,9 +454,10 @@ export async function POST(request: Request) {
         profile: "orchestrate",
         systemInstruction: personaHeader,
         contents: revisionContents,
-        maxOutputTokens: 1200,
+        temperature: ownerSpeaker === "copywriter" || ownerSpeaker === "social" ? 0.7 : 0.4,
+        maxOutputTokens: 4096,
         responseMimeType: "application/json",
-        timeoutMs: 15000,
+        timeoutMs: 30000,
       });
 
       const { turns, deliverablePatch } = parseChatPayload(

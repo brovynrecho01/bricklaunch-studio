@@ -99,10 +99,10 @@ function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): 
 }
 
 /**
- * Low-latency, quota-efficient generateContent wrapper:
- * - Strictly standard config { temperature: 0.7, maxOutputTokens, no thinkingConfig }
- * - Automatic failover across separate model quota buckets (Gemini Flash-Lite -> Flash -> Gemma 4)
- * - Optional Google Search Grounding (only when ENABLE_SEARCH_GROUNDING=true to protect free-tier quota)
+ * Resilient generateContent wrapper with per-agent temperature & expanded token budgets:
+ * - Strictly standard config { temperature, maxOutputTokens, systemInstruction } — NO thinkingConfig
+ * - Automatic failover across separate model quota buckets
+ * - Optional Google Search Grounding (enabled when ENABLE_SEARCH_GROUNDING=true)
  */
 export async function generateWithResilience(
   ai: GoogleGenAI,
@@ -111,6 +111,7 @@ export async function generateWithResilience(
     systemInstruction: string;
     useSearchGrounding?: boolean;
     profile?: "orchestrate" | "fast_chat";
+    temperature?: number;
     maxOutputTokens?: number;
     responseMimeType?: string;
     timeoutMs?: number;
@@ -119,9 +120,10 @@ export async function generateWithResilience(
   const profile = params.profile || "orchestrate";
   const chain =
     profile === "fast_chat" ? FAST_CHAT_MODEL_CHAIN : ORCHESTRATE_MODEL_CHAIN;
-  const timeoutMs = params.timeoutMs ?? (profile === "fast_chat" ? 8000 : 15000);
+  const timeoutMs = params.timeoutMs ?? (profile === "fast_chat" ? 10000 : 35000);
   const maxOutputTokens =
-    params.maxOutputTokens ?? (profile === "fast_chat" ? 500 : 1200);
+    params.maxOutputTokens ?? (profile === "fast_chat" ? 500 : 4096);
+  const temperature = params.temperature ?? 0.7;
   const allowGrounding =
     Boolean(params.useSearchGrounding) &&
     process.env.ENABLE_SEARCH_GROUNDING === "true";
@@ -131,7 +133,6 @@ export async function generateWithResilience(
   for (const model of chain) {
     const isGemma = model.startsWith("gemma-");
 
-    // Gemma models work best with instructions inline and without responseMimeType/tools
     const effectiveContents = isGemma
       ? `${params.systemInstruction}\n\n${params.contents}`
       : params.contents;
@@ -142,7 +143,7 @@ export async function generateWithResilience(
       maxOutputTokens: number;
       responseMimeType?: string;
     } = {
-      temperature: 0.7,
+      temperature,
       maxOutputTokens,
     };
 

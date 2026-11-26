@@ -275,6 +275,7 @@ export function CeoCommandHud() {
     agents,
     workflowPhase,
     ceoBrief,
+    executiveBrief,
     researchSummary,
     researchSources,
     managerReport,
@@ -421,6 +422,26 @@ export function CeoCommandHud() {
 
     const generatedAt = new Date().toLocaleString("id-ID");
 
+    const divScoresLine = cert.divisionScores
+      ? `> - **Per-Division Mini-Scores:** Maya (Research): \`${cert.divisionScores.maya ?? 95}/100\` · Leo (Copy): \`${cert.divisionScores.leo ?? 95}/100\` · Sora (Social): \`${cert.divisionScores.sora ?? 94}/100\` · Raka (Finance): \`${cert.divisionScores.raka ?? 95}/100\` · Nadia (HR): \`${cert.divisionScores.nadia ?? 94}/100\``
+      : "";
+
+    const strengthsBlock =
+      cert.strengths && cert.strengths.length > 0
+        ? [
+            `> - **Key Audit Strengths:**`,
+            ...cert.strengths.map((s) => `>   - ${s}`),
+          ]
+        : [];
+
+    const refinementBlock =
+      cert.refinementNotes && cert.refinementNotes.length > 0
+        ? [
+            `> - **Pre-Launch Refinement Notes:**`,
+            ...cert.refinementNotes.map((r) => `>   - ${r}`),
+          ]
+        : [];
+
     const markdown = [
       `# BRICKLAUNCH STUDIO — MASTER LAUNCH KIT (7 CHAPTERS)`,
       ``,
@@ -428,9 +449,12 @@ export function CeoCommandHud() {
       `>`,
       `> - **Audit Score:** \`${cert.score} / 100\``,
       `> - **Official Status:** ✅ **${cert.status}**`,
+      divScoresLine,
       `> - **Cross-Division Check — Copy vs. Pricing:** ${cert.copyVsPricing}`,
       `> - **Cross-Division Check — Social Schedule vs. Funnel:** ${cert.socialVsFunnel}`,
       `> - **Cross-Division Check — SOP vs. SLA:** ${cert.sopVsSla}`,
+      ...strengthsBlock,
+      ...refinementBlock,
       `> - **Auditor Sign-Off (Bima — Product QC & Launch Auditor):** _"${cert.auditorSignOff}"_`,
       `> - **Timestamp:** ${generatedAt}`,
       ``,
@@ -443,7 +467,11 @@ export function CeoCommandHud() {
       selectedAngle ? `- **Selected Marketing Angle:** **${selectedAngle.title}**` : "",
       selectedAngle ? `- **Core Positioning Hook:** "${selectedAngle.hook}"` : "",
       selectedAngle ? `- **Primary Target Audience:** ${selectedAngle.targetAudience}` : "",
-      managerReport ? `\n**Executive Manager Summary:**\n${managerReport}` : "",
+      selectedAngle?.whyItConverts
+        ? `- **Why It Converts (Psychological Rationale):** ${selectedAngle.whyItConverts}`
+        : "",
+      executiveBrief ? `\n## 1.1 Executive Creative Brief\n\n${executiveBrief}` : "",
+      managerReport ? `\n## 1.2 Manager Strategic Recommendation\n\n${managerReport}` : "",
       ``,
       `---`,
       ``,
@@ -1017,11 +1045,48 @@ export function CeoCommandHud() {
                           <div className="mt-1.5 text-xs font-bold text-white">
                             ✅ {finalDeliverable.qcCertificate.status}
                           </div>
+
+                          {finalDeliverable.qcCertificate.divisionScores && (
+                            <div className="mt-2 flex flex-wrap gap-1">
+                              {(
+                                [
+                                  ["Maya", finalDeliverable.qcCertificate.divisionScores.maya],
+                                  ["Leo", finalDeliverable.qcCertificate.divisionScores.leo],
+                                  ["Sora", finalDeliverable.qcCertificate.divisionScores.sora],
+                                  ["Raka", finalDeliverable.qcCertificate.divisionScores.raka],
+                                  ["Nadia", finalDeliverable.qcCertificate.divisionScores.nadia],
+                                ] as const
+                              ).map(([name, sc]) =>
+                                sc !== undefined ? (
+                                  <span
+                                    key={name}
+                                    className="rounded-md border border-white/15 bg-white/5 px-1.5 py-0.5 font-mono text-[9.5px] text-slate-200"
+                                  >
+                                    {name}: <strong className="text-emerald-300">{sc}</strong>
+                                  </span>
+                                ) : null
+                              )}
+                            </div>
+                          )}
+
                           <div className="mt-2 space-y-1 text-[10.5px] text-slate-200">
                             <p>• <strong className="text-emerald-200">Copy vs. Pricing:</strong> {finalDeliverable.qcCertificate.copyVsPricing}</p>
                             <p>• <strong className="text-emerald-200">Social vs. Funnel:</strong> {finalDeliverable.qcCertificate.socialVsFunnel}</p>
                             <p>• <strong className="text-emerald-200">SOP vs. SLA:</strong> {finalDeliverable.qcCertificate.sopVsSla}</p>
                           </div>
+
+                          {finalDeliverable.qcCertificate.refinementNotes &&
+                            finalDeliverable.qcCertificate.refinementNotes.length > 0 && (
+                              <div className="mt-2 rounded-lg border border-amber-400/25 bg-amber-500/10 p-2 text-[10px] text-amber-100">
+                                <div className="font-bold text-amber-300 mb-0.5">
+                                  Catatan Penyempurnaan Pre-Launch:
+                                </div>
+                                {finalDeliverable.qcCertificate.refinementNotes.map((note, idx) => (
+                                  <p key={idx}>• {note}</p>
+                                ))}
+                              </div>
+                            )}
+
                           <p className="mt-2 border-t border-white/10 pt-1.5 italic text-[10.5px] text-emerald-100/90">
                             &ldquo;{finalDeliverable.qcCertificate.auditorSignOff}&rdquo; — Bima (QC)
                           </p>
@@ -1470,6 +1535,12 @@ export function CeoCommandHud() {
                         <span className="font-semibold text-slate-400">Target: </span>
                         {angle.targetAudience}
                       </div>
+                      {angle.whyItConverts && (
+                        <div className="mt-2 rounded-xl border border-emerald-400/20 bg-emerald-500/10 px-2.5 py-2 text-[10.5px] leading-relaxed text-emerald-100">
+                          <span className="font-semibold text-emerald-300">Why It Converts: </span>
+                          {angle.whyItConverts}
+                        </div>
+                      )}
                     </div>
 
                     <button
