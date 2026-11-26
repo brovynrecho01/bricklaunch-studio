@@ -83,39 +83,49 @@ flowchart LR
 
 ---
 
-## Seluruh Peran Agent (Lego Minifigure Roster)
+## Seluruh Peran Agent (7 Divisi Setara — Lego Minifigure Roster)
 
-| Agent | Peran & Judul | Warna Seragam | Zona Meja | Kepribadian & Tanggung Jawab |
+| Agent | Divisi & Peran | Warna Seragam | Zona Meja `[X, Y, Z]` | Kepribadian & Tanggung Jawab |
 | :--- | :--- | :--- | :--- | :--- |
-| **Alex** (`manager`) | **AI Manager / Handoff Orchestrator** | `#1E293B` *(Dark Navy Suit)* · Aksen `#60A5FA` | `MANAGER_DESK` `[-3.5, 0, -2.5]` | **Tenang, terstruktur, tegas, dan suportif.** Menerima brief CEO, mendelegasikan riset ke Maya, menyintesis 3 Marketing Angle kontras, menahan alur di gerbang ACC CEO, melakukan QA, serta mengoordinasikan permintaan revisi dari DM. |
-| **Maya** (`researcher`) | **Market & Consumer Psychology Researcher** | `#0284C7` *(Sky Blue Shirt)* · Aksen `#38BDF8` | `RESEARCHER_DESK` `[-4.0, 0, 1.5]` | **Analitis, penasaran, dan data-driven.** Membedah pain point terdalam target audiens, memetakan psikologi pembelian, menemukan celah kompetitor, lalu menyerahkan dossier ke Meja Manager (mendukung Google Search Grounding opsional). |
-| **Leo** (`copywriter`) | **Conversion Copywriter** | `#D97706` *(Amber Sweater)* · Aksen `#FBBF24` | `COPYWRITER_DESK` `[-1.0, 0, 1.5]` | **Punchy, kreatif, energik, dan fokus konversi.** Menerima angle yang di-ACC CEO untuk menulis **Copy Landing Page**, **Utas Viral 5-bagian X/Threads**, dan **Skrip Video Pendek 45 detik**, mencetaknya di Copier Zone, serta mengeksekusi revisi live via DM. |
+| **Alex** (`manager`) | **AI Manager / Handoff Orchestrator** | `#1E293B` *(Dark Navy)* · Aksen `#60A5FA` | `MANAGER_DESK` `[-3.5, 0, -2.5]` | **Tenang, terstruktur, tegas, dan suportif.** Memimpin 7 divisi, menyintesis 3 Marketing Angle kontras, menjaga gerbang ACC CEO, dan mengoordinasikan revisi lintas divisi. |
+| **Maya** (`researcher`) | **Market & Psychology Researcher** | `#0284C7` *(Sky Blue)* · Aksen `#38BDF8` | `RESEARCHER_DESK` `[-4.0, 0, 1.5]` | **Analitis, penasaran, data-driven.** Membedah pain point terdalam, psikologi konsumen, dan celah kompetitor (mendukung Google Search Grounding opsional). |
+| **Leo** (`copywriter`) | **Conversion Copywriter** | `#D97706` *(Amber)* · Aksen `#FBBF24` | `COPYWRITER_DESK` `[-1.0, 0, 1.5]` | **Punchy, kreatif, fokus konversi.** Menulis **Landing Page Copy**, **Utas Viral 5-bagian**, dan **Skrip Video 45d**, serta mencetak paket final di Copier Zone. |
+| **Sora** (`social`) | **Social Media Specialist** | `#DB2777` *(Vibrant Pink)* · Aksen `#F472B6` | `SOCIAL_DESK` `[1.5, 0, 1.5]` | **Trend-savvy, ceria, community-driven.** Merancang **Kalender Konten 7 Hari** multi-platform (TikTok, IG Reels, X/Threads, LinkedIn) dan strategi distribusi organik. |
+| **Raka** (`finance`) | **Finance & Pricing Strategist** | `#059669` *(Emerald)* · Aksen `#34D399` | `FINANCE_DESK` `[-4.0, 0, 3.6]` | **Presisi angka & pragmatis.** Menyusun **Pricing Tier**, promo early-bird, unit economics, net margin, break-even point & proyeksi revenue Bulan 1. |
+| **Nadia** (`hr`) | **Human Resources & Team Ops** | `#7C3AED` *(Royal Violet)* · Aksen `#A78BFA` | `HR_DESK` `[-1.0, 0, 3.6]` | **Hangat, suportif, teratur.** Mengatur kapasitas tim, **SOP Operasional Launch**, SLA respon pembeli, onboarding customer & pencegahan burnout tim. |
+| **Bima** (`qc`) | **Product QC & Launch Auditor** | `#DC2626` *(Crimson Red)* · Aksen `#F87171` | `QC_DESK` `[1.5, 0, 3.6]` | **Teliti, perfeksionis, ketat standar.** Memimpin **Pre-Launch Product QC Gate** — mengaudit konsistensi copy, angka pricing, jadwal sosmed & SOP sebelum memberi sertifikat LOLOS QC dan izin cetak. |
 
-### Alur Kerja 7-Tahap Human-in-the-Loop
+### Alur Kerja 7-Tahap Human-in-the-Loop + Pre-Launch QC
 1. **CEO Brief** — CEO mengetik ide produk digital atau mengklik 1-klik **Run Sample Launch Mission**.
-2. **Maya Market & Psychology Research** — Alex mendelegasikan riset; Maya duduk di meja riset untuk membedah audiens & kompetitor.
+2. **Riset Pasar, Finance & Kesiapan HR** — Maya membedah pasar, Raka memvalidasi kelayakan margin awal, dan Nadia mengecek kapasitas 7 divisi.
 3. **Alex Pre-Production Report** — Maya melakukan handoff ke Meja Manager; Alex merangkum **3 Marketing Angle** berbeda.
-4. **CEO Approval Gate (HITL)** — Studio berhenti di modal persetujuan agar Human CEO menilai hasil riset dan memilih 1 angle pemenang.
-5. **Leo Conversion Drafting** — Alex menyerahkan brief kreatif ke Leo; Leo duduk di workstation menulis seluruh paket copywriting.
-6. **Alex QA & Live DM Revision Loop** — Alex memverifikasi kualitas; CEO dapat mengirim DM ke Leo/Alex kapan saja untuk merevisi copy secara live.
-7. **Leo Copier Printing & `.md` Export** — Leo berjalan ke `COPIER_PRINTER_ZONE` (dengan lampu beacon & animasi kertas keluar) lalu menyerahkan **Launch Kit `.md`** siap unduh.
+4. **CEO Approval Gate (HITL)** — Studio berhenti di modal persetujuan agar Human CEO memilih 1 angle pemenang.
+5. **Produksi Serentak 4 Divisi** — Leo (Copy), Sora (Social Media), Raka (Finance), dan Nadia (HR) bekerja serentak di meja masing-masing.
+6. **Pre-Launch Product QC Gate (Bima)** — Sebelum dicetak, paket diserahkan ke meja **Bima (`QC_DESK`)** untuk audit menyeluruh (`/100`) & sertifikasi siap rilis.
+7. **Copier Printing, Ekspor `.md` 7-Divisi & Revisi Live** — Setelah lolos QC, Leo mencetak Launch Kit lengkap di `COPIER_PRINTER_ZONE` dan CEO dapat DM divisi mana saja untuk revisi live.
 
 ---
 
-## Detail Profil Kantor Virtual 3D
+## Detail Profil Kantor Virtual 3D — Kampus Dual-Wing (24m × 10m)
 
-Kantor virtual **BrickLaunch Studio** dirancang di atas bidang lantai arsitektural **12m × 10m** yang berpusat pada koordinat dunia `[0, 0, 0]` dengan pencahayaan studio hangat, bayangan lembut (`2048×2048`), dan `<OrbitControls>` yang terkunci di atas permukaan lantai.
+Kantor virtual **BrickLaunch Studio** membentang luas **24m × 10m** pada sumbu X (`X: [-12, +12]`, `Z: [-5, +5]`) menggunakan dua instans `office_room.glb` yang dihubungkan oleh **partisi kaca arsitektural di `X = 0`** dan **pintu berengsel otomatis ber-sensor jarak (`2.2m`) di `[0, 0, -0.5]`**:
 
-### Peta Koordinat Zona Kantor (`OFFICE_ZONES`)
+### Peta Koordinat Zona Kampus (`OFFICE_ZONES`)
 
-| Zona | Koordinat `[X, Y, Z]` | Aset 3D & Fungsi Operasional |
+| Sayap / Zona | Koordinat `[X, Y, Z]` | Aset 3D & Fungsi Operasional |
 | :--- | :--- | :--- |
-| **Office Room Shell** | `[0.0, 0.0, 0.0]` | `office_room.glb` diskalakan presisi ke `12m × 10m` (lantai oak, jendela kiri, acoustic slats, pintu belakang, aksen dinding sage-mint). |
-| **Manager Desk (Alex)** | `[-3.5, 0.0, -2.5]` | `workstation_desk.glb` + kursi kerja ergonomis + laptop menyala + titik serah terima handoff di depan meja. |
-| **Researcher Desk (Maya)** | `[-4.0, 0.0, 1.5]` | `workstation_desk.glb` + kursi ergonomis + indikator halo aktif saat Maya melakukan riset pasar. |
-| **Copywriter Desk (Leo)** | `[-1.0, 0.0, 1.5]` | `workstation_desk.glb` + kursi ergonomis + layar menyala oranye saat Leo menulis Launch Kit & revisi. |
-| **Copier / Printer Zone** | `[0.5, 0.0, -3.5]` | `office_copier.glb` lengkap dengan beacon LED status ungu berkedip & animasi lembaran kertas tercetak saat `PRINTING_DELIVERABLE`. |
-| **Pantry Coffee Bar** | `[4.0, 0.0, -1.5]` | `pantry_bar.glb` (kabinet slate, meja quartz, kulkas, beverage cooler, mesin espresso & warm under-LED) sebagai zona istirahat kopi agent. |
+| **West Wing Shell** | `[-6.0, 0.0, 0.0]` | `office_room.glb` (12m × 10m) — Sayap Executive, Intelligence & Creative. |
+| **Manager Desk (Alex)** | `[-9.2, 0.0, -2.5]` | `workstation_desk.glb` + kursi ergonomis + titik handoff eksekutif. |
+| **Researcher Desk (Maya)** | `[-9.5, 0.0, 1.8]` | `workstation_desk.glb` + kursi ergonomis + halo aktif riset psikologi pasar. |
+| **Copywriter Desk (Leo)** | `[-6.2, 0.0, 1.8]` | `workstation_desk.glb` + kursi ergonomis + penulisan BAB 3 Launch Kit. |
+| **Social Media Desk (Sora)** | `[-3.0, 0.0, 1.8]` | `workstation_desk.glb` + kursi ergonomis + penyusunan BAB 4 Kalender 7 Hari. |
+| **Copier / Printer Zone** | `[-4.2, 0.0, -3.5]` | `office_copier.glb` dengan beacon LED ungu & animasi lembaran cetak `.md`. |
+| **Animated Connecting Door** | `[0.0, 0.0, -0.5]` | Pintu kaca/oak berengsel dengan sensor proximity `2.2m` (membuka mulus `Math.PI / 2.2`) + waypoint routing otomatis lintas sayap. |
+| **East Wing Shell** | `[6.0, 0.0, 0.0]` | `office_room.glb` kedua (12m × 10m) — Sayap Finance, Operations, QC & Pantry. |
+| **Finance Desk (Raka)** | `[3.0, 0.0, 1.8]` | `workstation_desk.glb` + kursi ergonomis + penyusunan BAB 5 Pricing & Proyeksi. |
+| **HR Desk (Nadia)** | `[6.2, 0.0, 1.8]` | `workstation_desk.glb` + kursi ergonomis + penyusunan BAB 6 SOP & SLA. |
+| **QC Product Desk (Bima)** | `[9.2, 0.0, 1.8]` | `workstation_desk.glb` + kursi ergonomis + audit Sertifikat QC & BAB 7 Go-Live. |
+| **Pantry Coffee Bar** | `[8.5, 0.0, -2.2]` | `pantry_bar.glb` + mesin espresso tempat rehat kopi tim dari kedua sayap. |
 
 ### Katalog 5 Aset 3D Blender (`public/models/`)
 - `office_room.glb` — Struktur cutaway isometrik ruang kantor modern.

@@ -53,24 +53,25 @@ export async function POST(request: Request) {
         );
       }
 
-      // 1 panggilan terpadu (hemat kuota 50% & 2x lebih cepat):
-      // Maya menyusun intelijen pasar + Alex langsung menyintesis 3 Marketing Angles untuk CEO
+      // 1 panggilan terpadu hemat kuota: Maya (Market Research) + masukan awal Raka (Finance) & Nadia (HR) -> sintesis 3 angle oleh Alex
       const { response: synthesisRes, modelUsed } = await generateWithResilience(ai, {
         profile: "orchestrate",
         useSearchGrounding: true,
         responseMimeType: "application/json",
         maxOutputTokens: 1200,
         systemInstruction:
-          "Kamu menjalankan kolaborasi 2 agent di BRICKLAUNCH STUDIO:\n" +
-          "1. Maya (Market Researcher): membedah pain point audiens, celah kompetitor, dan peluang pasar.\n" +
-          "2. Alex (AI Manager): merangkum hasil riset Maya menjadi 3 Marketing Angle berbeda untuk dipilih CEO.\n" +
-          "Gunakan BAHASA INDONESIA yang tajam, spesifik, dan natural. Keluarkan HANYA objek JSON valid tanpa markdown fences.",
+          "Kamu menjalankan kolaborasi pra-produksi 7-divisi di BRICKLAUNCH STUDIO:\n" +
+          "- Maya (Market & Psychology Researcher): pain point audiens, psikologi beli & celah kompetitor.\n" +
+          "- Raka (Finance): validasi kelayakan harga & margin.\n" +
+          "- Nadia (HR): kesiapan kapasitas tim.\n" +
+          "- Alex (AI Manager): menyintesis menjadi 3 Marketing Angle kontras untuk dipilih CEO.\n" +
+          "Gunakan BAHASA INDONESIA tajam dan natural. Keluarkan HANYA JSON valid tanpa markdown fences.",
         contents:
           `Brief Produk Digital dari CEO: "${ceoBrief}"\n\n` +
-          `Buat analisis pasar dari Maya + sintesis 3 Marketing Angle dari Alex dalam STRICT JSON valid:\n` +
+          `Susun analisis pasar Maya + catatan kelayakan Finance/HR + 3 Marketing Angle Alex dalam STRICT JSON valid:\n` +
           `{\n` +
-          `  "researchSummary": "Ringkasan riset Maya 4-6 kalimat tajam mencakup pain point utama audiens, celah kompetitor, dan peluang konversi",\n` +
-          `  "managerReport": "Ringkasan eksekutif 2 kalimat dari Alex merekomendasikan cara memilih angle terbaik",\n` +
+          `  "researchSummary": "Ringkasan 4-6 kalimat tajam mencakup pain point audiens, celah kompetitor, estimasi titik harga potensial (Raka), dan kesiapan eksekusi tim (Nadia)",\n` +
+          `  "managerReport": "Ringkasan eksekutif 2 kalimat dari Alex merekomendasikan cara memilih angle terbaik sebelum seluruh 7 divisi produksi & QC",\n` +
           `  "mayaHandoffLine": "1 kalimat obrolan natural Maya ke Alex saat menyerahkan hasil riset",\n` +
           `  "alexApprovalLine": "1 kalimat obrolan natural Alex ke CEO bahwa 3 angle siap dipilih",\n` +
           `  "marketingAngles": [\n` +
@@ -124,13 +125,13 @@ export async function POST(request: Request) {
         marketingAngles: angles,
         managerReport:
           parsed.managerReport ||
-          "Maya sudah merampungkan riset pasar. Silakan pilih 1 dari 3 angle di bawah ini agar Leo bisa langsung menulis materi launch kit.",
+          "Maya, Raka, dan Nadia selesai melakukan riset & validasi awal. Pilih 1 dari 3 angle di bawah agar seluruh 7 divisi langsung produksi dan audit QC.",
         mayaHandoffLine:
           parsed.mayaHandoffLine ||
-          "Alex, dossier riset pasarnya sudah beres! Celah kompetitornya jelas banget buat kita ambil.",
+          "Alex, dossier riset pasarnya beres! Raka & Nadia juga sudah konfirmasi kelayakan harga dan tim.",
         alexApprovalLine:
           parsed.alexApprovalLine ||
-          "Mantap Maya! Bos CEO, saya sudah rangkum 3 angle peluncuran terbaik — silakan pilih satu buat kita eksekusi.",
+          "Mantap tim! Bos CEO, 3 angle peluncuran terbaik sudah siap — pilih satu buat kita eksekusi sampai lolos QC Bima.",
       });
     }
 
@@ -147,38 +148,72 @@ export async function POST(request: Request) {
         );
       }
 
+      // Produksi serentak 7 divisi + Pre-Launch Product QC oleh Bima
       const { response: copyRes, modelUsed } = await generateWithResilience(ai, {
         profile: "orchestrate",
         responseMimeType: "application/json",
         maxOutputTokens: 1200,
         systemInstruction:
-          "Kamu adalah Leo, Senior Conversion Copywriter di BrickLaunch Studio, berkolaborasi dengan Alex (AI Manager). " +
-          "Tulis copywriting direct-response yang tajam, spesifik, persuasif, dan natural dalam BAHASA INDONESIA. Keluarkan HANYA JSON valid.",
+          "Kamu mengorkestrasi produksi final 5 divisi BRICKLAUNCH STUDIO dalam BAHASA INDONESIA:\n" +
+          "- Leo (Copywriter): landingPageCopy, launchThread, shortVideoScript.\n" +
+          "- Sora (Social Media Specialist): socialMediaPlan (kalender distribusi 7 hari TikTok/Reels/Threads).\n" +
+          "- Raka (Finance): financePlan (pricing tier, promo rilis, margin & proyeksi revenue).\n" +
+          "- Nadia (HR): hrOpsChecklist (SOP peluncuran, SLA respon & pembagian tugas tim).\n" +
+          "- Bima (Product QC): qcAuditReport (skor audit /100, verifikasi konsistensi & clearance pra-rilis).\n" +
+          "Buat setiap bagian PADAT & TAJAM (65-95 kata per field) agar seluruh objek JSON rapi di bawah 850 kata. Keluarkan HANYA JSON valid.",
         contents:
           `Brief Produk: "${ceoBrief}"\n` +
           `Riset Pasar: ${researchSummary}\n` +
-          `Marketing Angle Disetujui CEO:\n` +
-          `- Judul: ${selectedAngle.title}\n` +
-          `- Hook: ${selectedAngle.hook}\n` +
-          `- Target Audiens: ${selectedAngle.targetAudience}\n\n` +
-          `Buat paket peluncuran lengkap siap pakai dalam BAHASA INDONESIA sebagai STRICT JSON valid SAJA (tanpa markdown fences di luar JSON). ` +
-          `Buat setiap aset padat, tajam, dan siap publish agar total JSON tetap rapi di bawah 950 kata:\n` +
+          `Angle Disetujui CEO: "${selectedAngle.title}" — ${selectedAngle.hook} (Target: ${selectedAngle.targetAudience})\n\n` +
+          `Keluarkan STRICT JSON valid SAJA:\n` +
           `{\n` +
-          `  "landingPageCopy": "Markdown Bahasa Indonesia berisi ## Headline, **Subheadline**, 3 poin manfaat utama, dan **Primary CTA**",\n` +
-          `  "launchThread": "Markdown utas viral 5 bagian untuk X/Threads dalam Bahasa Indonesia berlabel 1/5 sampai 5/5",\n` +
-          `  "shortVideoScript": "Markdown skrip video 45 detik TikTok/Reels dalam Bahasa Indonesia dengan **[0-5d Hook]**, **[5-35d Isi]**, dan **[35-45d CTA]** beserta arahan visual",\n` +
-          `  "leoPrintLine": "1 kalimat obrolan antusias dari Leo ke Alex saat mencetak paket Launch Kit di mesin fotokopi",\n` +
-          `  "handoffSummary": "Catatan serah terima 2 kalimat dalam Bahasa Indonesia dari Alex & Leo bahwa Launch Kit siap diunduh CEO"\n` +
+          `  "landingPageCopy": "Markdown singkat: ## Headline, **Subheadline**, 3 bullet manfaat, **Primary CTA**",\n` +
+          `  "launchThread": "Markdown utas 5 bagian X/Threads berlabel 1/5 sampai 5/5",\n` +
+          `  "shortVideoScript": "Markdown skrip video 45d dengan **[0-5d Hook]**, **[5-35d Isi]**, **[35-45d CTA]**",\n` +
+          `  "socialMediaPlan": "Markdown kalender konten 7 hari (H1-H7) multi-platform & community growth oleh Sora (BAB 4)",\n` +
+          `  "financePlan": "Markdown 2 tier harga, early-bird, unit economics & proyeksi revenue Bulan 1 oleh Raka (BAB 5)",\n` +
+          `  "hrOpsChecklist": "Markdown SOP operasional peluncuran, SLA respon & customer onboarding oleh Nadia (BAB 6)",\n` +
+          `  "qcAuditReport": "Markdown Post-Launch QC Checklist & Go-Live Sign-Off oleh Bima (BAB 7)",\n` +
+          `  "qcCertificate": {\n` +
+          `    "score": 96,\n` +
+          `    "status": "PASSED — APPROVED FOR LAUNCH",\n` +
+          `    "copyVsPricing": "1 kalimat hasil verifikasi konsistensi copy landing page vs pricing tier",\n` +
+          `    "socialVsFunnel": "1 kalimat hasil verifikasi kalender sosmed 7 hari vs funnel rilis",\n` +
+          `    "sopVsSla": "1 kalimat hasil verifikasi SOP operasional vs SLA respon pembeli",\n` +
+          `    "auditorSignOff": "1 kalimat tanda tangan resmi Bima mengesahkan peluncuran"\n` +
+          `  },\n` +
+          `  "qcSignoffLine": "1 kalimat konfirmasi Bima ke Alex bahwa Sertifikat QC resmi PASSED",\n` +
+          `  "leoPrintLine": "1 kalimat antusias Leo ke Alex saat mencetak Master Launch Kit 7-BAB di Copier West Wing",\n` +
+          `  "handoffSummary": "Catatan serah terima 2 kalimat dari Alex bahwa Master Launch Kit 7-BAB tersertifikasi QC siap diunduh"\n` +
           `}`,
       });
 
       const parsed = extractJsonObject<{
-        landingPageCopy: string;
-        launchThread: string;
-        shortVideoScript: string;
+        landingPageCopy?: string;
+        launchThread?: string;
+        shortVideoScript?: string;
+        socialMediaPlan?: string;
+        financePlan?: string;
+        hrOpsChecklist?: string;
+        qcAuditReport?: string;
+        qcCertificate?: {
+          score?: number;
+          status?: string;
+          copyVsPricing?: string;
+          socialVsFunnel?: string;
+          sopVsSla?: string;
+          auditorSignOff?: string;
+        };
+        qcSignoffLine?: string;
         leoPrintLine?: string;
         handoffSummary?: string;
       }>(copyRes.text || "");
+
+      const cert = parsed.qcCertificate;
+      const qcScore =
+        typeof cert?.score === "number" && cert.score >= 70 && cert.score <= 100
+          ? Math.round(cert.score)
+          : 96;
 
       return NextResponse.json({
         phase: "COMPLETED",
@@ -187,13 +222,44 @@ export async function POST(request: Request) {
           landingPageCopy: parsed.landingPageCopy || "",
           launchThread: parsed.launchThread || "",
           shortVideoScript: parsed.shortVideoScript || "",
+          socialMediaPlan:
+            parsed.socialMediaPlan ||
+            "- **H1-H2:** Teaser pain-point TikTok/Reels & behind-the-build Threads.\n- **H3:** Launch Day multi-platform.\n- **H4-H7:** Demo nyata, social proof & last call promo early-bird.",
+          financePlan:
+            parsed.financePlan ||
+            "- **Starter & Pro Tier** dengan early-bird 48 jam, net margin ~92% untuk produk digital, dan target BEP di 10 penjualan pertama.",
+          hrOpsChecklist:
+            parsed.hrOpsChecklist ||
+            "- **Pra-Rilis:** Uji link checkout & sinkronisasi lintas divisi.\n- **SLA Respon:** ≤ 30 menit pada jam puncak.\n- **Onboarding:** Email akses instan + panduan cepat.",
+          qcAuditReport:
+            parsed.qcAuditReport ||
+            "- **Verifikasi Pra-Tayang:** Link checkout, file unduhan mobile/desktop & kebijakan refund terverifikasi.\n- **Go-Live Sign-Off:** Disetujui penuh untuk rilis publik oleh Bima.",
+          qcCertificate: {
+            score: qcScore,
+            status: cert?.status || "PASSED — APPROVED FOR LAUNCH",
+            copyVsPricing:
+              cert?.copyVsPricing ||
+              "PASS — Klaim manfaat Landing Page & CTA selaras dengan skema harga dan promo early-bird Raka.",
+            socialVsFunnel:
+              cert?.socialVsFunnel ||
+              "PASS — Kalender 7 hari Sora mengarahkan trafik secara runtut menuju konversi Launch Day & Last Call.",
+            sopVsSla:
+              cert?.sopVsSla ||
+              "PASS — SOP onboarding otomatis & SLA respon pembeli Nadia siap menopang lonjakan trafik rilis.",
+            auditorSignOff:
+              cert?.auditorSignOff ||
+              "Seluruh 7 BAB Master Launch Kit telah lulus verifikasi lintas divisi tanpa temuan kritis.",
+          },
         },
+        qcSignoffLine:
+          parsed.qcSignoffLine ||
+          `Sertifikat Audit QC terbit — Skor ${qcScore}/100 (PASSED — APPROVED FOR LAUNCH)! Seluruh 7 BAB siap dicetak!`,
         leoPrintLine:
           parsed.leoPrintLine ||
-          `Lex, semua materi buat "${selectedAngle.title}" udah kelar! Lagi gue print di mesin fotokopi nih.`,
+          `QC Bima PASSED (${qcScore}/100)! Gue balik lewat pintu tengah ke Copier West Wing buat cetak Master Launch Kit 7-BAB!`,
         handoffSummary:
           parsed.handoffSummary ||
-          `Leo telah mencetak Launch Kit lengkap untuk "${selectedAngle.title}" dan menyerahkannya kepada Alex untuk CEO.`,
+          `Master Launch Kit 7-BAB untuk "${selectedAngle.title}" telah LOLOS Sertifikat Audit QC Bima (${qcScore}/100) dan siap diunduh (.md).`,
       });
     }
 

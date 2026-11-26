@@ -12,19 +12,50 @@ export type Vec3 = [number, number, number];
 export const CHAT_POPUP_TTL_MS = 3 * 60 * 1000;
 
 /**
- * Office World Coordinates (12m x 10m floor centered at [0, 0, 0])
+ * Dual-Wing Connected Office Coordinates (Total 24m x 10m across X-axis: [-12..+12], Z: [-5..+5])
+ * - West Wing (Executive, Intelligence & Creative): center [-6, 0, 0]
+ * - East Wing (Finance, Operations, QC & Pantry): center [6, 0, 0]
+ * - Connecting Doorway: [0, 0, -0.5]
  */
 export const OFFICE_ZONES = {
-  PANTRY_COFFEE_ZONE: [4.0, 0, -1.5] as Vec3,
-  MANAGER_DESK: [-3.5, 0, -2.5] as Vec3,
-  RESEARCHER_DESK: [-4.0, 0, 1.5] as Vec3,
-  COPYWRITER_DESK: [-1.0, 0, 1.5] as Vec3,
-  COPIER_PRINTER_ZONE: [0.5, 0, -3.5] as Vec3,
+  // West Wing
+  MANAGER_DESK: [-9.2, 0, -2.5] as Vec3,
+  RESEARCHER_DESK: [-9.5, 0, 1.8] as Vec3,
+  COPYWRITER_DESK: [-6.2, 0, 1.8] as Vec3,
+  SOCIAL_DESK: [-3.0, 0, 1.8] as Vec3,
+  COPIER_PRINTER_ZONE: [-4.2, 0, -3.5] as Vec3,
+
+  // Connecting Doorway
+  CONNECTING_DOORWAY: [0, 0, -0.5] as Vec3,
+
+  // East Wing
+  FINANCE_DESK: [3.0, 0, 1.8] as Vec3,
+  HR_DESK: [6.2, 0, 1.8] as Vec3,
+  QC_DESK: [9.2, 0, 1.8] as Vec3,
+  PANTRY_COFFEE_ZONE: [8.5, 0, -2.2] as Vec3,
 } as const;
 
 export type OfficeZoneKey = keyof typeof OFFICE_ZONES;
 
-export type AgentId = "manager" | "researcher" | "copywriter";
+export type AgentId =
+  | "manager"
+  | "researcher"
+  | "copywriter"
+  | "social"
+  | "finance"
+  | "hr"
+  | "qc";
+
+export const ALL_AGENT_IDS: AgentId[] = [
+  "manager",
+  "researcher",
+  "copywriter",
+  "social",
+  "finance",
+  "hr",
+  "qc",
+];
+
 export type ChatSender = "ceo" | AgentId;
 export type ChatRecipient = "ceo" | "all" | AgentId;
 export type ChatTarget = "all" | AgentId;
@@ -43,10 +74,11 @@ export type WorkflowPhase =
   | "RESEARCHING"
   | "AWAITING_CEO_APPROVAL"
   | "COPYWRITING"
+  | "QC_REVIEW"
   | "PRINTING_DELIVERABLE"
   | "COMPLETED";
 
-export type CameraPreset = "overview" | "workstations" | "pantry" | "copier";
+export type CameraPreset = "campus" | "west_wing" | "east_wing" | "pantry";
 
 export interface MarketingAngle {
   id: string;
@@ -60,11 +92,34 @@ export interface ResearchSource {
   url: string;
 }
 
+export interface QcCertificate {
+  score: number;
+  status: string;
+  copyVsPricing: string;
+  socialVsFunnel: string;
+  sopVsSla: string;
+  auditorSignOff: string;
+}
+
 export interface FinalDeliverable {
   landingPageCopy: string;
   launchThread: string;
   shortVideoScript: string;
+  socialMediaPlan: string;
+  financePlan: string;
+  hrOpsChecklist: string;
+  qcAuditReport: string;
+  qcCertificate?: QcCertificate;
 }
+
+export type DeliverableKey =
+  | "landingPageCopy"
+  | "launchThread"
+  | "shortVideoScript"
+  | "socialMediaPlan"
+  | "financePlan"
+  | "hrOpsChecklist"
+  | "qcAuditReport";
 
 export interface TelemetryLog {
   id: string;
@@ -88,6 +143,8 @@ export interface AgentState {
   id: AgentId;
   name: string;
   role: string;
+  division: string;
+  wing: "West Wing" | "East Wing";
   fullTitle: string;
   torsoColor: string;
   accentColor: string;
@@ -98,25 +155,21 @@ export interface AgentState {
   targetRotationY: number;
   bubbleText: string;
   bubbleTo: ChatRecipient | null;
-  /** Epoch ms kapan speech cloud 3D otomatis menghilang (null = tersembunyi) */
   bubbleExpiresAt: number | null;
 }
 
+/** Posisi berdiri non-overlapping di depan East Wing Pantry Bar ([8.5, 0, -2.2]) menghadap -Z ke counter */
 const AGENT_PANTRY_SPOTS: Record<AgentId, { pos: Vec3; rotY: number }> = {
-  manager: {
-    pos: [OFFICE_ZONES.PANTRY_COFFEE_ZONE[0] - 1.05, 0, OFFICE_ZONES.PANTRY_COFFEE_ZONE[2] - 1.15],
-    rotY: Math.PI / 2,
-  },
-  researcher: {
-    pos: [OFFICE_ZONES.PANTRY_COFFEE_ZONE[0] - 1.45, 0, OFFICE_ZONES.PANTRY_COFFEE_ZONE[2] + 0.05],
-    rotY: Math.PI / 2,
-  },
-  copywriter: {
-    pos: [OFFICE_ZONES.PANTRY_COFFEE_ZONE[0] - 1.05, 0, OFFICE_ZONES.PANTRY_COFFEE_ZONE[2] + 1.2],
-    rotY: Math.PI / 2,
-  },
+  manager: { pos: [7.1, 0, -1.0], rotY: Math.PI },
+  researcher: { pos: [8.0, 0, -0.85], rotY: Math.PI },
+  copywriter: { pos: [9.0, 0, -0.85], rotY: Math.PI },
+  social: { pos: [9.9, 0, -1.0], rotY: Math.PI },
+  finance: { pos: [7.5, 0, -0.15], rotY: Math.PI },
+  hr: { pos: [8.5, 0, -0.1], rotY: Math.PI },
+  qc: { pos: [9.5, 0, -0.15], rotY: Math.PI },
 };
 
+/** Posisi duduk di kursi ergonomis masing-masing meja kerja (z = deskZ - 0.68) */
 const AGENT_DESK_SPOTS: Record<AgentId, { pos: Vec3; rotY: number }> = {
   manager: {
     pos: [OFFICE_ZONES.MANAGER_DESK[0], 0, OFFICE_ZONES.MANAGER_DESK[2] - 0.68],
@@ -130,21 +183,45 @@ const AGENT_DESK_SPOTS: Record<AgentId, { pos: Vec3; rotY: number }> = {
     pos: [OFFICE_ZONES.COPYWRITER_DESK[0], 0, OFFICE_ZONES.COPYWRITER_DESK[2] - 0.68],
     rotY: 0,
   },
+  social: {
+    pos: [OFFICE_ZONES.SOCIAL_DESK[0], 0, OFFICE_ZONES.SOCIAL_DESK[2] - 0.68],
+    rotY: 0,
+  },
+  finance: {
+    pos: [OFFICE_ZONES.FINANCE_DESK[0], 0, OFFICE_ZONES.FINANCE_DESK[2] - 0.68],
+    rotY: 0,
+  },
+  hr: {
+    pos: [OFFICE_ZONES.HR_DESK[0], 0, OFFICE_ZONES.HR_DESK[2] - 0.68],
+    rotY: 0,
+  },
+  qc: {
+    pos: [OFFICE_ZONES.QC_DESK[0], 0, OFFICE_ZONES.QC_DESK[2] - 0.68],
+    rotY: 0,
+  },
 };
 
-/** Titik jalan-jalan bebas hambatan di dalam studio 12m x 10m */
+/** Titik jalan-jalan bebas hambatan di West Wing & East Wing (memicu jalan lintas pintu otomatis!) */
 const ROAM_WAYPOINTS: Array<{ pos: Vec3; rotY: number; note: string }> = [
-  { pos: [0.3, 0, -0.3], rotY: 0.4, note: "Jalan santai keliling ruang studio" },
-  { pos: [1.5, 0, 2.3], rotY: -0.9, note: "Meregangkan kaki sambil cari inspirasi" },
-  { pos: [-1.8, 0, -0.7], rotY: 1.2, note: "Mengecek suasana area meja kerja" },
-  { pos: [-4.9, 0, -0.4], rotY: -Math.PI / 2, note: "Melihat pemandangan lewat jendela kantor" },
-  { pos: [1.4, 0, -1.9], rotY: -0.5, note: "Jalan santai di koridor dekat copier" },
-  { pos: [-2.4, 0, 3.2], rotY: 0.2, note: "Jalan sore santai di area depan studio" },
-  { pos: [0.8, 0, 3.3], rotY: -2.5, note: "Brainstorming sambil jalan-jalan" },
+  // West Wing Open Corridors
+  { pos: [-7.2, 0, -0.5], rotY: 0.4, note: "Jalan santai di koridor West Wing" },
+  { pos: [-2.2, 0, -0.5], rotY: 1.5, note: "Menuju pintu penghubung menuju East Wing" },
+  { pos: [-10.6, 0, -0.2], rotY: -Math.PI / 2, note: "Menikmati pemandangan jendela West Wing" },
+  { pos: [-6.0, 0, 3.6], rotY: -0.4, note: "Jalan santai di area depan Creative Wing" },
+  // East Wing Open Corridors
+  { pos: [2.2, 0, -0.5], rotY: -1.5, note: "Melintasi pintu kaca menuju koridor East Wing" },
+  { pos: [5.4, 0, -0.5], rotY: 0.6, note: "Koordinasi santai di lorong Operations & QC" },
+  { pos: [4.8, 0, 3.6], rotY: -0.3, note: "Jalan santai di area depan East Wing" },
+  { pos: [10.6, 0, -0.4], rotY: -1.6, note: "Mengecek sudut timur dekat Pantry & QC" },
 ];
 
 const MANAGER_HANDOFF_SPOT = {
   pos: [OFFICE_ZONES.MANAGER_DESK[0], 0, OFFICE_ZONES.MANAGER_DESK[2] + 0.88] as Vec3,
+  rotY: Math.PI,
+};
+
+const QC_HANDOFF_SPOT = {
+  pos: [OFFICE_ZONES.QC_DESK[0], 0, OFFICE_ZONES.QC_DESK[2] + 0.88] as Vec3,
   rotY: Math.PI,
 };
 
@@ -158,22 +235,22 @@ const SENDER_META: Record<
   { name: string; role: string; color: string }
 > = {
   ceo: { name: "Kamu (CEO)", role: "Founder", color: "#F59E0B" },
-  manager: { name: "Alex", role: "AI Manager", color: "#475569" },
+  manager: { name: "Alex", role: "AI Manager", color: "#60A5FA" },
   researcher: { name: "Maya", role: "Market Researcher", color: "#0284C7" },
   copywriter: { name: "Leo", role: "Copywriter", color: "#D97706" },
+  social: { name: "Sora", role: "Social Media Specialist", color: "#DB2777" },
+  finance: { name: "Raka", role: "Finance Strategist", color: "#059669" },
+  hr: { name: "Nadia", role: "Human Resources", color: "#7C3AED" },
+  qc: { name: "Bima", role: "Product QC", color: "#DC2626" },
 };
 
-/**
- * Mode standby awal yang natural:
- * - Alex duduk di meja manager sambil cek dashboard
- * - Maya ngopi santai di Pantry Bar
- * - Leo jalan-jalan santai di tengah ruangan studio
- */
 const createInitialAgents = (): Record<AgentId, AgentState> => ({
   manager: {
     id: "manager",
     name: "Alex",
     role: "AI Manager",
+    division: "Management",
+    wing: "West Wing",
     fullTitle: "Alex — AI Manager / Handoff Orchestrator",
     torsoColor: "#1E293B",
     accentColor: "#60A5FA",
@@ -182,7 +259,7 @@ const createInitialAgents = (): Record<AgentId, AgentState> => ({
     standbyActivity: "desk_sit",
     targetPosition: AGENT_DESK_SPOTS.manager.pos,
     targetRotationY: AGENT_DESK_SPOTS.manager.rotY,
-    bubbleText: "Duduk di meja manager cek roadmap — siap terima brief CEO!",
+    bubbleText: "Cek kesiapan West & East Wing — siap terima brief CEO!",
     bubbleTo: "all",
     bubbleExpiresAt: null,
   },
@@ -190,7 +267,9 @@ const createInitialAgents = (): Record<AgentId, AgentState> => ({
     id: "researcher",
     name: "Maya",
     role: "Market Researcher",
-    fullTitle: "Maya — Market Researcher",
+    division: "Market Research",
+    wing: "West Wing",
+    fullTitle: "Maya — Market & Psychology Researcher",
     torsoColor: "#0284C7",
     accentColor: "#38BDF8",
     deskZone: "RESEARCHER_DESK",
@@ -198,14 +277,16 @@ const createInitialAgents = (): Record<AgentId, AgentState> => ({
     standbyActivity: "pantry",
     targetPosition: AGENT_PANTRY_SPOTS.researcher.pos,
     targetRotationY: AGENT_PANTRY_SPOTS.researcher.rotY,
-    bubbleText: "Lagi seduh kopi di Pantry sambil pantau tren pasar.",
-    bubbleTo: "manager",
+    bubbleText: "Nyebrang ke East Wing Pantry buat seduh kopi dulu!",
+    bubbleTo: "hr",
     bubbleExpiresAt: null,
   },
   copywriter: {
     id: "copywriter",
     name: "Leo",
-    role: "Conversion Copywriter",
+    role: "Copywriter",
+    division: "Copywriting",
+    wing: "West Wing",
     fullTitle: "Leo — Conversion Copywriter",
     torsoColor: "#D97706",
     accentColor: "#FBBF24",
@@ -214,8 +295,80 @@ const createInitialAgents = (): Record<AgentId, AgentState> => ({
     standbyActivity: "roam",
     targetPosition: ROAM_WAYPOINTS[0].pos,
     targetRotationY: ROAM_WAYPOINTS[0].rotY,
-    bubbleText: "Jalan-jalan cari inspirasi hook baru di ruangan!",
+    bubbleText: "Jalan-jalan di koridor West Wing cari hook segar!",
+    bubbleTo: "social",
+    bubbleExpiresAt: null,
+  },
+  social: {
+    id: "social",
+    name: "Sora",
+    role: "Social Media",
+    division: "Social Media",
+    wing: "West Wing",
+    fullTitle: "Sora — Social Media Specialist",
+    torsoColor: "#DB2777",
+    accentColor: "#F472B6",
+    deskZone: "SOCIAL_DESK",
+    status: "IDLE_PANTRY",
+    standbyActivity: "roam",
+    targetPosition: ROAM_WAYPOINTS[1].pos,
+    targetRotationY: ROAM_WAYPOINTS[1].rotY,
+    bubbleText: "Mau lewat pintu kaca ke East Wing ngobrol sama Raka!",
+    bubbleTo: "finance",
+    bubbleExpiresAt: null,
+  },
+  finance: {
+    id: "finance",
+    name: "Raka",
+    role: "Finance",
+    division: "Finance",
+    wing: "East Wing",
+    fullTitle: "Raka — Finance & Pricing Strategist",
+    torsoColor: "#059669",
+    accentColor: "#34D399",
+    deskZone: "FINANCE_DESK",
+    status: "WORKING",
+    standbyActivity: "desk_sit",
+    targetPosition: AGENT_DESK_SPOTS.finance.pos,
+    targetRotationY: AGENT_DESK_SPOTS.finance.rotY,
+    bubbleText: "Merapikan tabel unit economics & pricing tier di East Wing.",
+    bubbleTo: "manager",
+    bubbleExpiresAt: null,
+  },
+  hr: {
+    id: "hr",
+    name: "Nadia",
+    role: "Human Resources",
+    division: "Human Resources",
+    wing: "East Wing",
+    fullTitle: "Nadia — Human Resources & Team Ops",
+    torsoColor: "#7C3AED",
+    accentColor: "#A78BFA",
+    deskZone: "HR_DESK",
+    status: "IDLE_PANTRY",
+    standbyActivity: "pantry",
+    targetPosition: AGENT_PANTRY_SPOTS.hr.pos,
+    targetRotationY: AGENT_PANTRY_SPOTS.hr.rotY,
+    bubbleText: "Ngopi bareng Maya di Pantry East Wing jaga semangat tim!",
     bubbleTo: "researcher",
+    bubbleExpiresAt: null,
+  },
+  qc: {
+    id: "qc",
+    name: "Bima",
+    role: "Product QC",
+    division: "Quality Control",
+    wing: "East Wing",
+    fullTitle: "Bima — Product QC & Launch Auditor",
+    torsoColor: "#DC2626",
+    accentColor: "#F87171",
+    deskZone: "QC_DESK",
+    status: "WORKING",
+    standbyActivity: "desk_sit",
+    targetPosition: AGENT_DESK_SPOTS.qc.pos,
+    targetRotationY: AGENT_DESK_SPOTS.qc.rotY,
+    bubbleText: "Sertifikat Audit Pre-Launch QC siap di East Wing — standar ketat!",
+    bubbleTo: "all",
     bubbleExpiresAt: null,
   },
 });
@@ -227,29 +380,29 @@ const INITIAL_CHAT_MESSAGES: ChatMessage[] = [
     senderName: "Alex",
     senderRole: "AI Manager",
     to: "all",
-    text: "Halo Bos CEO! Gue lagi duduk di meja cek jadwal, Maya di Pantry, Leo lagi jalan-jalan cari ide. Kapan pun siap deploy brief atau ngobrol, tinggal panggil ya!",
+    text: "Selamat datang di Kampus Dual-Wing BrickLaunch Studio (24m × 10m)! West Wing untuk Creative & Eksekutif, East Wing untuk Finance, HR, QC & Pantry — terhubung pintu otomatis di tengah!",
     timestamp: "ONLINE",
-    accentColor: "#475569",
+    accentColor: "#60A5FA",
   },
   {
     id: "chat-init-2",
-    sender: "researcher",
-    senderName: "Maya",
-    senderRole: "Market Researcher",
-    to: "copywriter",
-    text: "Leo, kopimu udah gue siapin di Pantry kalau habis keliling ruangan.",
+    sender: "social",
+    senderName: "Sora",
+    senderRole: "Social Media Specialist",
+    to: "finance",
+    text: "Raka, enak banget sekarang lega dua sayap! Gue tinggal lewat pintu tengah kalau mau sinkron promo sama Finance.",
     timestamp: "ONLINE",
-    accentColor: "#0284C7",
+    accentColor: "#DB2777",
   },
   {
     id: "chat-init-3",
-    sender: "copywriter",
-    senderName: "Leo",
-    senderRole: "Conversion Copywriter",
-    to: "researcher",
-    text: "Mantap May! Habis muter sebentar gue mampir Pantry ya.",
+    sender: "qc",
+    senderName: "Bima",
+    senderRole: "Product QC",
+    to: "all",
+    text: "Siap semuanya! Begitu produksi selesai, serahkan ke meja QC gue di East Wing untuk penerbitan Sertifikat Audit + Master Launch Kit 7-BAB.",
     timestamp: "ONLINE",
-    accentColor: "#D97706",
+    accentColor: "#DC2626",
   },
 ];
 
@@ -286,15 +439,27 @@ const makeChat = (
 };
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 const nextExpiry = () => Date.now() + CHAT_POPUP_TTL_MS;
 
+function ownerForDeliverableSection(section: DeliverableKey): AgentId {
+  switch (section) {
+    case "socialMediaPlan":
+      return "social";
+    case "financePlan":
+      return "finance";
+    case "hrOpsChecklist":
+      return "hr";
+    case "qcAuditReport":
+      return "qc";
+    default:
+      return "copywriter";
+  }
+}
+
 export interface AgencyStore {
-  // Multi-Agent Spatial State
   agents: Record<AgentId, AgentState>;
   activeSpeakerId: AgentId | null;
 
-  // Workflow & Deliverables State
   workflowPhase: WorkflowPhase;
   ceoBrief: string;
   researchSummary: string;
@@ -306,27 +471,23 @@ export interface AgencyStore {
   handoffSummary: string;
   telemetryLogs: TelemetryLog[];
 
-  // Multi-Agent Chat & Command Window State
   chatMessages: ChatMessage[];
   chatTarget: ChatTarget;
   isChatOpen: boolean;
-  /** Epoch ms kapan popup HUD obrolan otomatis menghilang setelah 3 menit */
   chatPopupExpiresAt: number | null;
   isChatting: boolean;
 
-  // UI & Camera State
   cameraPreset: CameraPreset;
   cameraTransitionNonce: number;
   isDrawerOpen: boolean;
-  activeDeliverableTab: keyof FinalDeliverable;
+  activeDeliverableTab: DeliverableKey;
   isCommandExpanded: boolean;
   isProcessing: boolean;
   error: string | null;
 
-  // Actions
   setCameraPreset: (preset: CameraPreset) => void;
   setDrawerOpen: (open: boolean) => void;
-  setActiveDeliverableTab: (tab: keyof FinalDeliverable) => void;
+  setActiveDeliverableTab: (tab: DeliverableKey) => void;
   setChatOpen: (open: boolean) => void;
   touchChatPopup: () => void;
   initClientPopups: () => void;
@@ -365,7 +526,7 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
       timestamp: "ONLINE",
       agent: "STUDIO CORE",
       action:
-        "BrickLaunch Studio aktif. Alex di meja kerja, Maya di Pantry, dan Leo berjalan santai di ruangan.",
+        "Kampus Dual-Wing 24m × 10m aktif: West Wing (Alex, Maya, Leo, Sora, Copier) ↔ Pintu Otomatis ↔ East Wing (Raka, Nadia, Bima, Pantry).",
     },
   ],
   chatMessages: INITIAL_CHAT_MESSAGES,
@@ -373,10 +534,10 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
   isChatOpen: false,
   chatPopupExpiresAt: null,
   isChatting: false,
-  cameraPreset: "overview",
+  cameraPreset: "campus",
   cameraTransitionNonce: 0,
   isDrawerOpen: false,
-  activeDeliverableTab: "landingPageCopy",
+  activeDeliverableTab: "qcAuditReport",
   isCommandExpanded: true,
   isProcessing: false,
   error: null,
@@ -403,13 +564,13 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
 
   initClientPopups: () => {
     const exp = nextExpiry();
-    set((state) => ({
-      agents: {
-        manager: { ...state.agents.manager, bubbleExpiresAt: exp },
-        researcher: { ...state.agents.researcher, bubbleExpiresAt: exp },
-        copywriter: { ...state.agents.copywriter, bubbleExpiresAt: exp },
-      },
-    }));
+    set((state) => {
+      const updated = { ...state.agents };
+      for (const id of ALL_AGENT_IDS) {
+        updated[id] = { ...updated[id], bubbleExpiresAt: exp };
+      }
+      return { agents: updated };
+    });
   },
 
   setCommandExpanded: (expanded) => set({ isCommandExpanded: expanded }),
@@ -433,12 +594,12 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
 
   addTelemetryLog: (agent, action) =>
     set((state) => ({
-      telemetryLogs: [makeLog(agent, action), ...state.telemetryLogs].slice(0, 60),
+      telemetryLogs: [makeLog(agent, action), ...state.telemetryLogs].slice(0, 80),
     })),
 
   addChatMessage: (sender, to, text) =>
     set((state) => ({
-      chatMessages: [...state.chatMessages, makeChat(sender, to, text)].slice(-50),
+      chatMessages: [...state.chatMessages, makeChat(sender, to, text)].slice(-60),
       chatPopupExpiresAt: state.isChatOpen ? nextExpiry() : state.chatPopupExpiresAt,
     })),
 
@@ -453,11 +614,6 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
       },
     })),
 
-  /**
-   * Aktivitas ambient natural selama mode standby (IDLE / COMPLETED):
-   * Secara bergantian ada yang duduk di meja kantor, ada yang jalan-jalan keliling ruangan,
-   * dan ada yang istirahat ngopi di Pantry Bar.
-   */
   runStandbyTick: () => {
     const state = get();
     if (
@@ -468,28 +624,35 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
       return;
     }
 
-    const order: AgentId[] = ["copywriter", "researcher", "manager"];
-    const agentId = order[standbyRotationCursor % order.length];
+    const agentId = ALL_AGENT_IDS[standbyRotationCursor % ALL_AGENT_IDS.length];
     standbyRotationCursor += 1;
 
     const currentAgent = state.agents[agentId];
-    const otherActivities = order
-      .filter((id) => id !== agentId)
-      .map((id) => state.agents[id].standbyActivity);
+    const counts: Record<StandbyActivity, number> = { desk_sit: 0, roam: 0, pantry: 0 };
+    for (const id of ALL_AGENT_IDS) {
+      if (id !== agentId) counts[state.agents[id].standbyActivity] += 1;
+    }
 
-    // Pilih aktivitas yang membuat ruangan selalu bervariasi (duduk meja, jalan, pantry)
-    const candidateActivities: StandbyActivity[] = ["desk_sit", "roam", "pantry"];
-    const missing = candidateActivities.filter((act) => !otherActivities.includes(act));
-    const pool = missing.length > 0 ? missing : candidateActivities;
+    const targets: Record<StandbyActivity, number> = { desk_sit: 3, roam: 2, pantry: 2 };
+    const deficits = (["desk_sit", "roam", "pantry"] as StandbyActivity[]).filter(
+      (act) => counts[act] < targets[act] && act !== currentAgent.standbyActivity
+    );
     const nextActivity =
-      pool.find((act) => act !== currentAgent.standbyActivity) ||
-      pool[Math.floor(Math.random() * pool.length)];
+      deficits.length > 0
+        ? deficits[Math.floor(Math.random() * deficits.length)]
+        : ((["desk_sit", "roam", "pantry"] as StandbyActivity[]).find(
+            (a) => a !== currentAgent.standbyActivity
+          ) || "desk_sit");
 
     if (nextActivity === "desk_sit") {
       const deskNotes: Record<AgentId, string> = {
-        manager: "Duduk di meja manager merapikan strategi peluncuran.",
+        manager: "Duduk di meja manager West Wing merapikan strategi.",
         researcher: "Duduk di meja riset memantau tren kompetitor.",
-        copywriter: "Duduk di meja kerja mencatat ide headline baru.",
+        copywriter: "Duduk di meja copy mencatat ide headline baru.",
+        social: "Menyusun ide konten TikTok & Reels di meja Social Media.",
+        finance: "Menghitung proyeksi margin & pricing di East Wing.",
+        hr: "Merapikan SOP tim & kesiapan operasional di meja HR.",
+        qc: "Menyiapkan checklist audit Pre-Launch QC di East Wing.",
       };
       state.updateAgent(agentId, {
         status: "WORKING",
@@ -501,9 +664,13 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
       });
     } else if (nextActivity === "pantry") {
       const pantryNotes: Record<AgentId, string> = {
-        manager: "Istirahat sejenak ngopi espresso di Pantry Bar.",
-        researcher: "Refill cold brew di Pantry Bar sambil santai.",
-        copywriter: "Nyeruput kopi hangat di Pantry cari mood nulis.",
+        manager: "Melintasi pintu ke Pantry East Wing ambil espresso.",
+        researcher: "Refill cold brew di Pantry Bar East Wing.",
+        copywriter: "Nyeruput kopi di Pantry cari inspirasi copywriting.",
+        social: "Rehat sejenak di Pantry sambil cek tren Reels.",
+        finance: "Kopi sore di Pantry biar hitungan cashflow makin presisi.",
+        hr: "Check-in santai bareng rekan lintas sayap di Pantry.",
+        qc: "Istirahat mata sejenak di Pantry sebelum audit berikutnya.",
       };
       state.updateAgent(agentId, {
         status: "IDLE_PANTRY",
@@ -514,23 +681,17 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
         bubbleTo: null,
       });
     } else {
-      // Pilih titik jalan-jalan yang tidak terlalu dekat dengan agent lain
-      const others = order
-        .filter((id) => id !== agentId)
-        .map((id) => state.agents[id].targetPosition);
+      const others = ALL_AGENT_IDS.filter((id) => id !== agentId).map(
+        (id) => state.agents[id].targetPosition
+      );
 
       const safeWaypoints = ROAM_WAYPOINTS.filter((wp) =>
         others.every(
           (pos) => Math.hypot(wp.pos[0] - pos[0], wp.pos[2] - pos[2]) > 1.35
         )
       );
-      const chosen =
-        (safeWaypoints.length > 0 ? safeWaypoints : ROAM_WAYPOINTS)[
-          Math.floor(
-            Math.random() *
-              (safeWaypoints.length > 0 ? safeWaypoints.length : ROAM_WAYPOINTS.length)
-          )
-        ];
+      const pool = safeWaypoints.length > 0 ? safeWaypoints : ROAM_WAYPOINTS;
+      const chosen = pool[Math.floor(Math.random() * pool.length)];
 
       state.updateAgent(agentId, {
         status: "IDLE_PANTRY",
@@ -555,19 +716,9 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
       chatPopupExpiresAt: nextExpiry(),
     });
 
+    const targetLabel = target === "all" ? "Semua 7 Divisi" : SENDER_META[target].name;
     addChatMessage("ceo", target, trimmed);
-    addTelemetryLog(
-      "CEO",
-      `Mengirim pesan ke ${
-        target === "all"
-          ? "Semua Tim"
-          : target === "manager"
-            ? "Alex"
-            : target === "researcher"
-              ? "Maya"
-              : "Leo"
-      }: "${trimmed}"`
-    );
+    addTelemetryLog("CEO", `Mengirim pesan ke ${targetLabel}: "${trimmed}"`);
 
     try {
       const state = get();
@@ -582,11 +733,8 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
           text: string;
           moveTo?: "stay" | "pantry" | "desk" | "manager_handoff" | "copier";
         }>;
-        deliverablePatch?: {
-          landingPageCopy?: string;
-          launchThread?: string;
-          shortVideoScript?: string;
-          revisedSection?: keyof FinalDeliverable;
+        deliverablePatch?: Partial<FinalDeliverable> & {
+          revisedSection?: DeliverableKey;
           revisionSummary?: string;
         } | null;
         error?: string;
@@ -630,53 +778,58 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
         }
       }
 
-      const turns: Array<{
-        speaker: AgentId;
-        to: ChatRecipient;
-        text: string;
-        moveTo?: "stay" | "pantry" | "desk" | "manager_handoff" | "copier";
-      }> = Array.isArray(data.turns) ? data.turns : [];
+      const turns = Array.isArray(data.turns) ? data.turns : [];
+      const patchData = data.deliverablePatch || null;
 
-      const patchData: {
-        landingPageCopy?: string;
-        launchThread?: string;
-        shortVideoScript?: string;
-        revisedSection?: keyof FinalDeliverable;
-        revisionSummary?: string;
-      } | null = data.deliverablePatch || null;
-
-      // Jika CEO meminta revisi Launch Kit: jalankan animasi Leo WORKING -> WALKING_TO_COPIER & perbarui deliverable!
       if (patchData && get().finalDeliverable) {
-        const exp = nextExpiry();
-        updateAgent("copywriter", {
+        const revisedTab: DeliverableKey =
+          patchData.revisedSection ||
+          (patchData.qcAuditReport
+            ? "qcAuditReport"
+            : patchData.hrOpsChecklist
+              ? "hrOpsChecklist"
+              : patchData.financePlan
+                ? "financePlan"
+                : patchData.socialMediaPlan
+                  ? "socialMediaPlan"
+                  : patchData.shortVideoScript
+                    ? "shortVideoScript"
+                    : patchData.launchThread
+                      ? "launchThread"
+                      : "landingPageCopy");
+
+        const ownerId = ownerForDeliverableSection(revisedTab);
+        const ownerMeta = SENDER_META[ownerId];
+
+        updateAgent(ownerId, {
           status: "WORKING",
           standbyActivity: "desk_sit",
-          targetPosition: AGENT_DESK_SPOTS.copywriter.pos,
-          targetRotationY: AGENT_DESK_SPOTS.copywriter.rotY,
-          bubbleText: "Siap Bos! Lagi merevisi draf Launch Kit sekarang...",
-          bubbleTo: "ceo",
-          bubbleExpiresAt: exp,
-        });
-        addTelemetryLog(
-          "Leo (Copywriter)",
-          "Menerima permintaan revisi CEO. Memperbarui naskah di Meja Copywriting."
-        );
-
-        await wait(900);
-
-        set({ workflowPhase: "PRINTING_DELIVERABLE", activeSpeakerId: "copywriter" });
-        updateAgent("copywriter", {
-          status: "WALKING_TO_COPIER",
-          standbyActivity: "roam",
-          targetPosition: COPIER_OPERATE_SPOT.pos,
-          targetRotationY: COPIER_OPERATE_SPOT.rotY,
-          bubbleText: "Revisi beres! Mencetak ulang versi terbaru di Copier...",
+          targetPosition: AGENT_DESK_SPOTS[ownerId].pos,
+          targetRotationY: AGENT_DESK_SPOTS[ownerId].rotY,
+          bubbleText: `Siap Bos! Lagi merevisi bagian ${ownerMeta.role} sekarang...`,
           bubbleTo: "ceo",
           bubbleExpiresAt: nextExpiry(),
         });
         addTelemetryLog(
-          "Leo (Copywriter)",
-          "Mencetak ulang Launch Kit hasil revisi di Zona Copier."
+          `${ownerMeta.name} (${ownerMeta.role})`,
+          `Menerima permintaan revisi CEO. Memperbarui deliverable di meja kerja.`
+        );
+
+        await wait(900);
+
+        set({ workflowPhase: "PRINTING_DELIVERABLE", activeSpeakerId: ownerId });
+        updateAgent(ownerId, {
+          status: "WALKING_TO_COPIER",
+          standbyActivity: "roam",
+          targetPosition: COPIER_OPERATE_SPOT.pos,
+          targetRotationY: COPIER_OPERATE_SPOT.rotY,
+          bubbleText: "Revisi beres & lolos QC! Mencetak ulang Master Launch Kit 7-BAB di Copier...",
+          bubbleTo: "ceo",
+          bubbleExpiresAt: nextExpiry(),
+        });
+        addTelemetryLog(
+          `${ownerMeta.name} (${ownerMeta.role})`,
+          "Menuju Copier West Wing untuk mencetak ulang Master Launch Kit 7-BAB (.md)."
         );
 
         await wait(1400);
@@ -686,14 +839,12 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
           landingPageCopy: patchData.landingPageCopy ?? prev.landingPageCopy,
           launchThread: patchData.launchThread ?? prev.launchThread,
           shortVideoScript: patchData.shortVideoScript ?? prev.shortVideoScript,
+          socialMediaPlan: patchData.socialMediaPlan ?? prev.socialMediaPlan,
+          financePlan: patchData.financePlan ?? prev.financePlan,
+          hrOpsChecklist: patchData.hrOpsChecklist ?? prev.hrOpsChecklist,
+          qcAuditReport: patchData.qcAuditReport ?? prev.qcAuditReport,
+          qcCertificate: patchData.qcCertificate ?? prev.qcCertificate,
         };
-        const revisedTab: keyof FinalDeliverable =
-          patchData.revisedSection ||
-          (patchData.shortVideoScript
-            ? "shortVideoScript"
-            : patchData.launchThread
-              ? "launchThread"
-              : "landingPageCopy");
 
         set({
           finalDeliverable: updatedDeliverable,
@@ -702,12 +853,12 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
           isDrawerOpen: true,
           handoffSummary:
             patchData.revisionSummary ||
-            "Revisi selesai dicetak Leo! File Launch Kit (.md) terbaru siap diunduh.",
+            `Revisi selesai dicetak oleh ${ownerMeta.name}! Master Launch Kit 7-BAB (.md) terbaru siap diunduh.`,
         });
         addTelemetryLog(
-          "Leo (Copywriter)",
+          `${ownerMeta.name} (${ownerMeta.role})`,
           patchData.revisionSummary ||
-            "Launch Kit terbaru hasil revisi sudah selesai dicetak & siap diunduh (.md)."
+            "Master Launch Kit 7-BAB hasil revisi sudah selesai dicetak & siap diunduh (.md)."
         );
       }
 
@@ -827,11 +978,7 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
         }
       }
 
-      const turns: Array<{
-        speaker: AgentId;
-        to: ChatRecipient;
-        text: string;
-      }> = Array.isArray(data.turns) ? data.turns : [];
+      const turns = Array.isArray(data.turns) ? data.turns : [];
 
       for (let i = 0; i < turns.length; i++) {
         const turn = turns[i];
@@ -882,10 +1029,9 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
       isDrawerOpen: true,
     });
 
-    addTelemetryLog("CEO", `Brief produk baru dikirim: "${trimmed}"`);
-    addChatMessage("ceo", "all", `Tim, gas eksekusi brief produk baru kita: "${trimmed}"`);
+    addTelemetryLog("CEO", `Brief produk baru dikirim ke kampus Dual-Wing (7 divisi): "${trimmed}"`);
+    addChatMessage("ceo", "all", `Tim 7 divisi, gas eksekusi brief produk baru kita: "${trimmed}"`);
 
-    // Kirim request Gemini SEGERA secara paralel (atau Static Demo Engine pada GitHub Pages)
     const orchestratePromise = IS_STATIC_DEMO_MODE
       ? runStaticDemoStartBrief(trimmed).then((payload) => ({
           ok: true,
@@ -901,78 +1047,71 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
           }),
         });
 
-    // 1. Alex menuju & duduk di Manager Desk
     set({ activeSpeakerId: "manager" });
-    const alexDispatchMsg = `Siap Bos! Maya, tolong langsung bedah pain point audiens & celah kompetitor untuk "${trimmed}" ya.`;
+    const alexDispatchMsg = `Siap Bos! Maya riset pasar di West Wing, Raka validasi margin & Nadia cek kapasitas tim di East Wing untuk "${trimmed}"!`;
     updateAgent("manager", {
-      status: "WALKING_TO_DESK",
+      status: "WORKING",
       standbyActivity: "desk_sit",
       targetPosition: AGENT_DESK_SPOTS.manager.pos,
       targetRotationY: AGENT_DESK_SPOTS.manager.rotY,
       bubbleText: alexDispatchMsg,
-      bubbleTo: "researcher",
+      bubbleTo: "all",
       bubbleExpiresAt: nextExpiry(),
     });
-    addChatMessage("manager", "researcher", alexDispatchMsg);
-    addTelemetryLog("Alex (Manager)", "Menuju Meja Manager untuk memecah brief.");
+    addChatMessage("manager", "all", alexDispatchMsg);
+    addTelemetryLog(
+      "Alex (Manager)",
+      "Mendelegasikan riset (Maya — West Wing), validasi margin (Raka — East Wing), & kesiapan tim (Nadia — East Wing)."
+    );
 
-    await wait(550);
+    await wait(500);
 
-    updateAgent("manager", {
-      status: "WORKING",
-      standbyActivity: "desk_sit",
-      bubbleText: "Memetakan ruang lingkup brief & memantau riset Maya...",
-      bubbleTo: "researcher",
-      bubbleExpiresAt: nextExpiry(),
-    });
-
-    // 2. Maya membalas & menuju Researcher Desk
     set({ activeSpeakerId: "researcher" });
-    const mayaReplyMsg =
-      "Oke Alex! Gue langsung ke meja riset buat scan keluhan pasar dan celah kompetitornya.";
     updateAgent("researcher", {
-      status: "WALKING_TO_DESK",
+      status: "WORKING",
       standbyActivity: "desk_sit",
       targetPosition: AGENT_DESK_SPOTS.researcher.pos,
       targetRotationY: AGENT_DESK_SPOTS.researcher.rotY,
-      bubbleText: mayaReplyMsg,
+      bubbleText: "Siap Alex! Balik lewat pintu kaca ke meja riset West Wing!",
       bubbleTo: "manager",
       bubbleExpiresAt: nextExpiry(),
     });
-    addChatMessage("researcher", "manager", mayaReplyMsg);
-    addTelemetryLog(
-      "Alex (Manager)",
-      "Mendelegasikan riset celah kompetitor & pain point audiens ke Maya."
-    );
-
-    await wait(550);
-
-    updateAgent("researcher", {
+    updateAgent("finance", {
       status: "WORKING",
       standbyActivity: "desk_sit",
-      bubbleText: "Sedang menyusun intelijen pasar & psikologi pembeli...",
+      targetPosition: AGENT_DESK_SPOTS.finance.pos,
+      targetRotationY: AGENT_DESK_SPOTS.finance.rotY,
+      bubbleText: "Menghitung benchmark harga & potensi ROI awal...",
       bubbleTo: "manager",
       bubbleExpiresAt: nextExpiry(),
     });
-    addTelemetryLog(
-      "Maya (Researcher)",
-      "Menjalankan sintesis riset pasar Gemini di Workstation."
+    updateAgent("hr", {
+      status: "WORKING",
+      standbyActivity: "desk_sit",
+      targetPosition: AGENT_DESK_SPOTS.hr.pos,
+      targetRotationY: AGENT_DESK_SPOTS.hr.rotY,
+      bubbleText: "Mengatur alokasi beban kerja & jadwal sprint 7 divisi...",
+      bubbleTo: "manager",
+      bubbleExpiresAt: nextExpiry(),
+    });
+    addChatMessage(
+      "researcher",
+      "manager",
+      "Oke Alex! Gue langsung balik ke meja riset bedah psikologi pembeli bareng Raka dan Nadia."
     );
 
     try {
       const res = await orchestratePromise;
-
       const data = await res.json();
 
       if (!res.ok) {
         throw new Error(data?.error || `Orkestrasi gagal (${res.status})`);
       }
 
-      // 3. Maya serah terima ke Meja Manager
       set({ activeSpeakerId: "researcher" });
       const mayaHandoffLine =
         data.mayaHandoffLine ||
-        "Alex, hasil riset pasarnya sudah jadi! Ini rangkuman celah kompetitor buat kamu olah.";
+        "Alex, dossier riset pasarnya sudah jadi! Raka & Nadia juga sudah kasih masukan kesiapan.";
       updateAgent("researcher", {
         status: "HANDOFF",
         standbyActivity: "roam",
@@ -985,24 +1124,23 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
       addChatMessage("researcher", "manager", mayaHandoffLine);
       addTelemetryLog(
         "Maya (Researcher)",
-        "Riset selesai. Berjalan ke Meja Manager untuk serah terima dossier."
+        "Riset selesai. Menyerahkan dossier ke Meja Manager (West Wing)."
       );
 
-      await wait(1400);
+      await wait(1200);
 
-      // 4. Maya kembali ke Pantry, Alex menunggu ACC CEO
       set({ activeSpeakerId: "manager" });
       const alexApprovalLine =
         data.alexApprovalLine ||
-        "Mantap Maya! Bos CEO, 3 Marketing Angle sudah siap — silakan pilih satu buat kita serahkan ke Leo.";
+        "Bos CEO, 3 Marketing Angle siap dipilih — setelah ACC seluruh 7 divisi langsung produksi & audit QC Bima!";
 
       updateAgent("researcher", {
         status: "IDLE_PANTRY",
         standbyActivity: "pantry",
         targetPosition: AGENT_PANTRY_SPOTS.researcher.pos,
         targetRotationY: AGENT_PANTRY_SPOTS.researcher.rotY,
-        bubbleText: "Dossier sudah di Alex — lanjut ngopi dulu di Pantry!",
-        bubbleTo: "copywriter",
+        bubbleText: "Dossier beres — jalan lewat pintu ke Pantry East Wing!",
+        bubbleTo: null,
         bubbleExpiresAt: nextExpiry(),
       });
 
@@ -1019,7 +1157,7 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
       addChatMessage("manager", "ceo", alexApprovalLine);
       addTelemetryLog(
         "Alex (Manager)",
-        `Menyusun ${data.marketingAngles?.length || 3} marketing angle. Menunggu persetujuan CEO.`
+        `Menyusun ${data.marketingAngles?.length || 3} marketing angle. Menunggu ACC CEO.`
       );
 
       set({
@@ -1035,9 +1173,8 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
         err instanceof Error ? err.message : "Gagal menjalankan fase riset.";
       addTelemetryLog("SYSTEM ALERT", message);
 
-      const resetAgents = createInitialAgents();
       set({
-        agents: resetAgents,
+        agents: createInitialAgents(),
         activeSpeakerId: null,
         workflowPhase: "IDLE",
         isProcessing: false,
@@ -1066,10 +1203,9 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
     addChatMessage(
       "ceo",
       "manager",
-      `Oke Alex, kita pakai angle "${selectedAngle.title}". Tolong langsung delegasikan ke Leo ya!`
+      `Oke Alex, kita pakai angle "${selectedAngle.title}". Kerahkan 7 divisi produksi Master Launch Kit 7-BAB & wajib lolos Sertifikat QC Bima!`
     );
 
-    // Kirim request copywriting SEGERA secara paralel (atau Static Demo Engine pada GitHub Pages)
     const copyPromise = IS_STATIC_DEMO_MODE
       ? runStaticDemoApproveAngle(get().ceoBrief, selectedAngle).then((payload) => ({
           ok: true,
@@ -1088,83 +1224,123 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
         });
 
     set({ activeSpeakerId: "manager" });
-    const alexToLeo = `Leo, CEO setuju pakai angle "${selectedAngle.title}"! Sini ambil brief-nya, bikin landing page, thread, sama skrip 45 detik ya.`;
+    const alexBriefAll = `Tim Dual-Wing! Angle "${selectedAngle.title}" di-ACC! Leo & Sora gas di West Wing, Raka & Nadia di East Wing — lalu wajib lolos audit QC Bima!`;
     updateAgent("manager", {
       status: "WORKING",
       standbyActivity: "desk_sit",
-      bubbleText: alexToLeo,
-      bubbleTo: "copywriter",
+      bubbleText: alexBriefAll,
+      bubbleTo: "all",
       bubbleExpiresAt: nextExpiry(),
     });
-    addChatMessage("manager", "copywriter", alexToLeo);
+    addChatMessage("manager", "all", alexBriefAll);
 
-    await wait(450);
+    await wait(500);
 
     set({ activeSpeakerId: "copywriter" });
-    const leoAck =
-      "Siap Lex! Gue samperin mejamu buat ambil brief, habis itu langsung duduk nulis di meja gue!";
     updateAgent("copywriter", {
-      status: "HANDOFF",
-      standbyActivity: "roam",
-      targetPosition: MANAGER_HANDOFF_SPOT.pos,
-      targetRotationY: MANAGER_HANDOFF_SPOT.rotY,
-      bubbleText: leoAck,
-      bubbleTo: "manager",
-      bubbleExpiresAt: nextExpiry(),
-    });
-    addChatMessage("copywriter", "manager", leoAck);
-    addTelemetryLog(
-      "Leo (Copywriter)",
-      "Berjalan menuju Meja Manager untuk serah terima brief kreatif."
-    );
-
-    await wait(850);
-
-    updateAgent("copywriter", {
-      status: "WALKING_TO_DESK",
+      status: "WORKING",
       standbyActivity: "desk_sit",
       targetPosition: AGENT_DESK_SPOTS.copywriter.pos,
       targetRotationY: AGENT_DESK_SPOTS.copywriter.rotY,
-      bubbleText: "OTW meja copywriting — siap rakit copy yang nendang!",
+      bubbleText: "Menulis BAB 3: Landing Page, Thread Viral & Skrip Video 45d!",
+      bubbleTo: "social",
+      bubbleExpiresAt: nextExpiry(),
+    });
+    updateAgent("social", {
+      status: "WORKING",
+      standbyActivity: "desk_sit",
+      targetPosition: AGENT_DESK_SPOTS.social.pos,
+      targetRotationY: AGENT_DESK_SPOTS.social.rotY,
+      bubbleText: "Menyusun BAB 4: Kalender Sosmed 7 Hari & Community Growth!",
+      bubbleTo: "copywriter",
+      bubbleExpiresAt: nextExpiry(),
+    });
+    updateAgent("finance", {
+      status: "WORKING",
+      standbyActivity: "desk_sit",
+      targetPosition: AGENT_DESK_SPOTS.finance.pos,
+      targetRotationY: AGENT_DESK_SPOTS.finance.rotY,
+      bubbleText: "Menyusun BAB 5: Pricing Tier, Unit Economics & Proyeksi Bulan 1!",
+      bubbleTo: "manager",
+      bubbleExpiresAt: nextExpiry(),
+    });
+    updateAgent("hr", {
+      status: "WORKING",
+      standbyActivity: "desk_sit",
+      targetPosition: AGENT_DESK_SPOTS.hr.pos,
+      targetRotationY: AGENT_DESK_SPOTS.hr.rotY,
+      bubbleText: "Menyusun BAB 6: Launch SOP, Buyer SLA & Customer Onboarding!",
+      bubbleTo: "qc",
+      bubbleExpiresAt: nextExpiry(),
+    });
+    updateAgent("qc", {
+      status: "WORKING",
+      standbyActivity: "desk_sit",
+      targetPosition: AGENT_DESK_SPOTS.qc.pos,
+      targetRotationY: AGENT_DESK_SPOTS.qc.rotY,
+      bubbleText: "Standby di Meja QC East Wing — siap audit 7-BAB sebelum rilis!",
       bubbleTo: "all",
       bubbleExpiresAt: nextExpiry(),
     });
 
-    await wait(650);
-
-    updateAgent("copywriter", {
-      status: "WORKING",
-      standbyActivity: "desk_sit",
-      bubbleText: "Lagi nulis landing page, thread viral & skrip video 45 detik...",
-      bubbleTo: "ceo",
-      bubbleExpiresAt: nextExpiry(),
-    });
-    updateAgent("manager", {
-      status: "WORKING",
-      standbyActivity: "desk_sit",
-      bubbleText: "Memantau sprint copywriting Leo...",
-      bubbleTo: "copywriter",
-      bubbleExpiresAt: nextExpiry(),
-    });
     addTelemetryLog(
-      "Leo (Copywriter)",
-      "Menulis copy landing page, utas 5-bagian X/Threads, dan skrip video 45 detik."
+      "Produksi Dual-Wing",
+      "West Wing (Leo, Sora) & East Wing (Raka, Nadia) mengeksekusi Master Launch Kit 7-BAB serentak."
     );
 
     try {
       const res = await copyPromise;
-
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data?.error || `Gagal membuat copywriting (${res.status})`);
+        throw new Error(data?.error || `Gagal membuat Launch Kit (${res.status})`);
       }
 
+      // FASE PRE-LAUNCH QC GATE: Leo berjalan MELINTASI PINTU PENGHUBUNG dari West Wing ke Meja QC Bima di East Wing!
+      set({ workflowPhase: "QC_REVIEW", activeSpeakerId: "qc" });
+      updateAgent("copywriter", {
+        status: "HANDOFF",
+        standbyActivity: "roam",
+        targetPosition: QC_HANDOFF_SPOT.pos,
+        targetRotationY: QC_HANDOFF_SPOT.rotY,
+        bubbleText: "Bima! Gue nyebrang lewat pintu tengah bawa draf 7-BAB buat diaudit QC!",
+        bubbleTo: "qc",
+        bubbleExpiresAt: nextExpiry(),
+      });
+
+      const bimaQcLine =
+        data.qcSignoffLine ||
+        "Diterima Leo! Gue sedang verifikasi Copy vs Pricing, Kalender Sosmed vs Funnel, dan SOP vs SLA sebelum terbitkan Sertifikat QC...";
+      updateAgent("qc", {
+        status: "WORKING",
+        standbyActivity: "desk_sit",
+        targetPosition: AGENT_DESK_SPOTS.qc.pos,
+        targetRotationY: AGENT_DESK_SPOTS.qc.rotY,
+        bubbleText: bimaQcLine,
+        bubbleTo: "manager",
+        bubbleExpiresAt: nextExpiry(),
+      });
+      addChatMessage("qc", "manager", bimaQcLine);
+      addTelemetryLog(
+        "Leo -> Bima (Lintas Pintu)",
+        "Leo melintasi pintu penghubung West -> East Wing menyerahkan draf 7-BAB ke Meja QC Bima."
+      );
+
+      await wait(2400);
+
+      // QC LOLOS -> Leo melintasi pintu kembali ke Copier West Wing untuk mencetak Master Launch Kit 7-BAB
       set({ workflowPhase: "PRINTING_DELIVERABLE", activeSpeakerId: "copywriter" });
       const leoPrintLine =
         data.leoPrintLine ||
-        `Lex, semua materi buat "${selectedAngle.title}" udah kelar! Lagi gue print di mesin fotokopi nih.`;
+        `Sertifikat QC Bima PASSED! Gue balik lewat pintu tengah ke Copier West Wing buat cetak Master Launch Kit 7-BAB!`;
 
+      updateAgent("qc", {
+        status: "WORKING",
+        standbyActivity: "desk_sit",
+        bubbleText: "PASSED — APPROVED FOR LAUNCH! Sertifikat QC resmi diterbitkan.",
+        bubbleTo: "ceo",
+        bubbleExpiresAt: nextExpiry(),
+      });
       updateAgent("copywriter", {
         status: "WALKING_TO_COPIER",
         standbyActivity: "roam",
@@ -1176,50 +1352,46 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
       });
       addChatMessage("copywriter", "manager", leoPrintLine);
       addTelemetryLog(
+        "Bima (QC Product)",
+        "PRODUCT QC CERTIFICATE: PASSED — APPROVED FOR LAUNCH! Izin cetak diterbitkan."
+      );
+      addTelemetryLog(
         "Leo (Copywriter)",
-        "Copy selesai! Berjalan ke Zona Copier untuk mencetak paket Launch Kit."
+        "Melintasi pintu kembali ke Copier West Wing untuk mencetak Master Launch Kit 7-BAB (.md)."
       );
 
       await wait(2400);
 
-      updateAgent("copywriter", {
-        status: "HANDOFF",
-        standbyActivity: "roam",
-        targetPosition: MANAGER_HANDOFF_SPOT.pos,
-        targetRotationY: MANAGER_HANDOFF_SPOT.rotY,
-        bubbleText: "Nih Lex, hasil cetakan Launch Kit-nya masih anget!",
-        bubbleTo: "manager",
-        bubbleExpiresAt: nextExpiry(),
-      });
-      addTelemetryLog(
-        "Leo (Copywriter)",
-        "Launch Kit tercetak diserahkan ke Alex di Meja Manager."
-      );
-
-      await wait(1400);
-
       set({ activeSpeakerId: "manager" });
       const finalNote =
         data.handoffSummary ||
-        `Launch Kit untuk "${selectedAngle.title}" sudah beres dan siap diunduh Bos CEO!`;
+        `Master Launch Kit 7-BAB untuk "${selectedAngle.title}" telah LOLOS Sertifikat Audit QC Bima dan selesai dicetak (.md)!`;
 
-      // Kembali ke aktivitas natural yang beragam (Alex di meja, Leo ke pantry)
-      updateAgent("manager", {
-        status: "WORKING",
-        standbyActivity: "desk_sit",
-        targetPosition: AGENT_DESK_SPOTS.manager.pos,
-        targetRotationY: AGENT_DESK_SPOTS.manager.rotY,
-        bubbleText: "Launch Kit beres! Kembali standby di meja manager.",
-        bubbleTo: "ceo",
-        bubbleExpiresAt: nextExpiry(),
-      });
       updateAgent("copywriter", {
         status: "IDLE_PANTRY",
         standbyActivity: "pantry",
         targetPosition: AGENT_PANTRY_SPOTS.copywriter.pos,
         targetRotationY: AGENT_PANTRY_SPOTS.copywriter.rotY,
-        bubbleText: "Mission accomplished! Kopi ronde dua di Pantry!",
-        bubbleTo: "researcher",
+        bubbleText: "Master Launch Kit 7-BAB beres — rayain kopi di Pantry East Wing!",
+        bubbleTo: "social",
+        bubbleExpiresAt: nextExpiry(),
+      });
+      updateAgent("social", {
+        status: "IDLE_PANTRY",
+        standbyActivity: "pantry",
+        targetPosition: AGENT_PANTRY_SPOTS.social.pos,
+        targetRotationY: AGENT_PANTRY_SPOTS.social.rotY,
+        bubbleText: "BAB 4 kalender konten siap tayang! Ikut ngopi di East Wing!",
+        bubbleTo: "copywriter",
+        bubbleExpiresAt: nextExpiry(),
+      });
+      updateAgent("manager", {
+        status: "WORKING",
+        standbyActivity: "desk_sit",
+        targetPosition: AGENT_DESK_SPOTS.manager.pos,
+        targetRotationY: AGENT_DESK_SPOTS.manager.rotY,
+        bubbleText: "Misi 7-Divisi sukses & lolos Sertifikat QC! Siap diunduh CEO.",
+        bubbleTo: "ceo",
         bubbleExpiresAt: nextExpiry(),
       });
 
@@ -1229,13 +1401,17 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
       set({
         workflowPhase: "COMPLETED",
         finalDeliverable: data.finalDeliverable || null,
+        activeDeliverableTab: "qcAuditReport",
         handoffSummary: finalNote,
         isProcessing: false,
         isDrawerOpen: true,
       });
 
-      await wait(2400);
-      set({ activeSpeakerId: null });
+      window.setTimeout(() => {
+        if (!get().isChatting && !get().isProcessing) {
+          set({ activeSpeakerId: null });
+        }
+      }, 2400);
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Gagal menghasilkan Launch Kit.";
@@ -1248,15 +1424,6 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
         targetRotationY: AGENT_DESK_SPOTS.manager.rotY,
         bubbleText: "Siap coba ulang persetujuan angle, Bos!",
         bubbleTo: "ceo",
-        bubbleExpiresAt: nextExpiry(),
-      });
-      updateAgent("copywriter", {
-        status: "IDLE_PANTRY",
-        standbyActivity: "pantry",
-        targetPosition: AGENT_PANTRY_SPOTS.copywriter.pos,
-        targetRotationY: AGENT_PANTRY_SPOTS.copywriter.rotY,
-        bubbleText: "Standby di Pantry Bar",
-        bubbleTo: null,
         bubbleExpiresAt: nextExpiry(),
       });
 
@@ -1272,9 +1439,9 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
   resetStudio: () => {
     const exp = nextExpiry();
     const fresh = createInitialAgents();
-    fresh.manager.bubbleExpiresAt = exp;
-    fresh.researcher.bubbleExpiresAt = exp;
-    fresh.copywriter.bubbleExpiresAt = exp;
+    for (const id of ALL_AGENT_IDS) {
+      fresh[id].bubbleExpiresAt = exp;
+    }
 
     set({
       agents: fresh,
@@ -1287,6 +1454,7 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
       marketingAngles: [],
       selectedAngleId: null,
       finalDeliverable: null,
+      activeDeliverableTab: "qcAuditReport",
       handoffSummary: "",
       isProcessing: false,
       isChatting: false,
@@ -1295,7 +1463,7 @@ export const useAgencyStore = create<AgencyStore>((set, get) => ({
       telemetryLogs: [
         makeLog(
           "STUDIO CORE",
-          "Studio direset. Alex duduk di meja, Maya di Pantry, dan Leo keliling ruangan."
+          "Kampus Dual-Wing 7 divisi direset. Semua agent kembali ke rutinitas standby natural."
         ),
       ],
     });

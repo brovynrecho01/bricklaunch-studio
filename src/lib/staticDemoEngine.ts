@@ -2,6 +2,7 @@ import type {
   AgentId,
   ChatRecipient,
   ChatTarget,
+  DeliverableKey,
   FinalDeliverable,
   MarketingAngle,
 } from "@/store/useAgencyStore";
@@ -39,15 +40,15 @@ export async function runStaticDemoStartBrief(ceoBrief: string) {
   return {
     phase: "AWAITING_CEO_APPROVAL",
     researchSummary:
-      `Hasil riset pasar untuk "${brief}" menunjukkan 3 pain point dominan: (1) calon pembeli lelah dengan solusi generik yang butuh konfigurasi berjam-jam, (2) kompetitor terlalu teknis dan lupa menonjolkan hasil akhir yang langsung terasa di hari pertama, dan (3) pembeli lebih cepat konversi saat melihat alur kerja siap pakai + contoh nyata. Celah terbesar ada pada positioning yang menggabungkan kemudahan instan dengan tampilan profesional.`,
+      `Riset pasar Maya (West Wing) + validasi Finance (Raka) & HR (Nadia) di East Wing untuk "${brief}": (1) audiens jenuh dengan solusi teknis yang butuh setup berjam-jam, (2) kompetitor gagal menampilkan hasil nyata di hari pertama, (3) struktur harga psikologis Rp149rb–Rp299rb menghasilkan net margin >90% dengan konversi optimal.`,
     researchSources: [],
     marketingAngles: angles,
     managerReport:
-      "Maya sudah merangkum celah pasar dan psikologi audiens dengan sangat tajam. Pilih 1 dari 3 angle di bawah agar Leo langsung meracik Launch Kit lengkapnya.",
+      "Maya, Raka, dan Nadia sudah menyelaraskan riset pasar, unit economics, serta kesiapan operasional. Pilih 1 angle pemenang agar 7 divisi menyusun Master Launch Kit 7-BAB & Sertifikat QC Bima.",
     mayaHandoffLine:
-      `Alex, riset untuk "${brief}" udah beres! Audiens paling sensitif sama setup ribet dan hasil instan.`,
+      `Alex, riset untuk "${brief}" selesai! Raka & Nadia di East Wing juga sudah konfirmasi kelayakan pricing dan tim.`,
     alexApprovalLine:
-      "Mantap Maya! Bos CEO, 3 Marketing Angle terbaik sudah siap — silakan ACC satu agar Leo tancap gas.",
+      "Mantap tim! Bos CEO, 3 Marketing Angle siap dipilih — ACC satu agar seluruh 7 divisi langsung produksi & audit QC.",
   };
 }
 
@@ -61,44 +62,90 @@ export async function runStaticDemoApproveAngle(
     landingPageCopy: [
       `## ${selectedAngle.title}: Cara Tercepat Kuasai ${ceoBrief}`,
       ``,
-      `**${selectedAngle.hook}** Dirancang khusus untuk ${selectedAngle.targetAudience.toLowerCase()} agar langsung eksekusi hari ini tanpa trial-error.`,
+      `**${selectedAngle.hook}** Dirancang khusus untuk ${selectedAngle.targetAudience.toLowerCase()} agar langsung eksekusi hari ini.`,
       ``,
-      `- **Siap Pakai dalam 3 Menit:** Struktur modular tinggal duplikasi dan langsung berjalan di alur kerjamu.`,
-      `- **Dirancang dari Psikologi Pengguna Nyata:** Menghapus langkah repetitif yang paling sering bikin proyek mandek.`,
-      `- **Update & Panduan Ringkas:** Dilengkapi checklist eksekusi cepat sehingga kamu langsung merasakan hasilnya di minggu pertama.`,
+      `- **Siap Pakai dalam 3 Menit:** Struktur modular tinggal duplikasi tanpa pusing konfigurasi.`,
+      `- **Berbasis Psikologi Pengguna:** Memangkas langkah repetitif yang bikin alur kerja macet.`,
+      `- **Panduan Cepat & Update Gratis:** Langsung terasa dampaknya sejak minggu pertama.`,
       ``,
-      `**Primary CTA:** Dapatkan ${ceoBrief} Sekarang — Mulai Lebih Rapi Hari Ini →`,
+      `**Primary CTA:** Dapatkan ${ceoBrief} Sekarang — Amankan Harga Early-Bird →`,
     ].join("\n"),
 
     launchThread: [
-      `**1/5** Kebanyakan orang gagal konsisten bukan karena kurang niat, tapi karena sistemnya terlalu ribet. Itu alasan kami membangun **${ceoBrief}**. 🧵👇`,
+      `**1/5** Kebanyakan orang gagal konsisten bukan karena kurang niat, tapi sistemnya terlalu ribet. Itu alasan kami merilis **${ceoBrief}**. 🧵`,
       ``,
-      `**2/5** Dari riset ke puluhan kreator & ${selectedAngle.targetAudience.toLowerCase()}, masalahnya selalu sama: terlalu banyak tab, file tercecer, dan waktu habis untuk administrasi.`,
+      `**2/5** Masalah utama ${selectedAngle.targetAudience.toLowerCase()}: tab berantakan, file tercecer, dan waktu habis di administrasi.`,
       ``,
-      `**3/5** Pendekatan kami sederhana — **${selectedAngle.title}**. ${selectedAngle.hook}`,
+      `**3/5** Solusi kami — **${selectedAngle.title}**. ${selectedAngle.hook}`,
       ``,
-      `**4/5** Di dalam **${ceoBrief}**, kamu langsung dapat alur kerja end-to-end, template siap isi, dan panduan praktik cepat tanpa perlu belajar teknis dari nol.`,
+      `**4/5** Di dalam **${ceoBrief}**, semua template, checklist, dan panduan cepat sudah menyatu rapi dalam satu workspace.`,
       ``,
-      `**5/5** Siap naik level hari ini? Cek tautan peluncuran di bio dan amankan akses early-bird **${ceoBrief}** sebelum harga normal berlaku! 🚀`,
+      `**5/5** Amankan harga early-bird **${ceoBrief}** lewat link di bio sebelum promo 48 jam berakhir! 🚀`,
     ].join("\n"),
 
     shortVideoScript: [
-      `**[0-5d Hook]** *(Visual: Close-up layar penuh tab berantakan, lalu transisi snap ke tampilan bersih)*`,
-      `"Stop! Masih buang waktu tiap minggu gara-gara alur kerja manual? Kenalin **${ceoBrief}**."`,
+      `**[0-5d Hook]** *(Close-up layar penuh tab berantakan → transisi snap ke tampilan bersih)*`,
+      `"Stop buang waktu tiap minggu buat kerja manual! Kenalin **${ceoBrief}**."`,
       ``,
-      `**[5-35d Isi]** *(Visual: Demo cepat 3 klik fitur utama dengan teks overlay besar)*`,
-      `"${selectedAngle.hook} Kamu tinggal buka, isi data utama sekali, dan semua progres langsung terpantau rapi dalam satu layar. Cocok banget buat ${selectedAngle.targetAudience.toLowerCase()} yang pengen hasil profesional tanpa pusing setup."`,
+      `**[5-35d Isi]** *(Demo cepat 3 klik fitur inti + teks overlay kontras)*`,
+      `"${selectedAngle.hook} Cukup isi sekali, semua progres langsung rapi dalam satu layar."`,
       ``,
-      `**[35-45d CTA]** *(Visual: Mockup produk + panah ke tombol link bio)*`,
-      `"Klik link di bio sekarang buat dapetin **${ceoBrief}** dan rasakan bedanya mulai hari ini!"`,
+      `**[35-45d CTA]** *(Mockup produk + panah ke bio)*`,
+      `"Klik link di bio sekarang untuk ambil **${ceoBrief}** hari ini!"`,
     ].join("\n"),
+
+    socialMediaPlan: [
+      `- **Hari 1 (Teaser Problem — TikTok/Reels):** Video singkat 15d memotret kekacauan alur kerja manual sebelum memakai ${ceoBrief}.`,
+      `- **Hari 2 (Behind The Build — X/Threads):** Cerita riset & psikologi pembeli di balik desain fitur inti.`,
+      `- **Hari 3 (Launch Day — Multi-Platform):** Publish Utas 5-bagian + Reels 45d + IG Story countdown promo 48 jam.`,
+      `- **Hari 4 (Mini Demo — TikTok/IG):** Screen recording 30 detik setup 3 menit langsung jalan.`,
+      `- **Hari 5 (Carousel Edukasi — IG/LinkedIn):** 5 kesalahan yang langsung dibereskan oleh ${ceoBrief}.`,
+      `- **Hari 6 (Social Proof & Q&A):** Bagikan testimoni pengguna awal + buka sesi tanya jawab komentar/DM.`,
+      `- **Hari 7 (Last Call & Community Onboarding):** Pengingat penutupan bonus early-bird + ajakan bergabung ke grup komunitas pembeli.`,
+    ].join("\n"),
+
+    financePlan: [
+      `- **Starter Tier:** Rp149.000 *(Early-Bird 48 Jam: Rp99.000)* — produk inti + panduan cepat.`,
+      `- **Pro Bundle Tier:** Rp299.000 *(Early-Bird: Rp229.000)* — produk inti + bonus template lanjutan + update seumur hidup.`,
+      `- **Unit Economics:** Biaya payment gateway & hosting ~7% → **Net Margin ~93% per transaksi**.`,
+      `- **Proyeksi Bulan 1 (Konservatif):** 120 pembeli (70% Starter, 30% Pro) ≈ **Rp22.400.000 Gross Revenue** | Break-Even Point di penjualan ke-8.`,
+    ].join("\n"),
+
+    hrOpsChecklist: [
+      `- **Pra-Rilis (H-2):** Sinkronisasi lintas sayap antara West Wing (Copy/Sosmed) & East Wing (Finance/QC) + uji coba checkout link.`,
+      `- **SLA Respon Pembeli:** Balas DM, komentar, dan tiket support maksimal **≤ 30 menit** pada 6 jam puncak peluncuran.`,
+      `- **Customer Onboarding Otomatis:** Email akses instan + video walkthrough 2 menit + kanal FAQ mandiri.`,
+      `- **Ritme Tim & Retrospektif (H+7):** Rotasi shift support agar tim bebas burnout + review feedback pelanggan untuk rilis v1.1.`,
+    ].join("\n"),
+
+    qcAuditReport: [
+      `- **Checklist Pra-Tayang Teknis:** Uji tautan checkout, verifikasi file unduhan di desktop & mobile, serta pastikan email konfirmasi otomatis terkirim.`,
+      `- **Checklist Klaim & Legal:** Seluruh janji manfaat pada landing page realistis, kebijakan lisensi penggunaan & ketentuan refund tertulis jelas.`,
+      `- **Checklist Hari-H Go-Live:** Monitoring 60 menit pertama (checkout rate, lonjakan DM, tautan bio TikTok/IG/X) + eskalasi cepat ke Alex & Raka jika ada anomali pembayaran.`,
+      `- **Keputusan Go-Live:** ✅ **DISETUJUI PENUH UNTUK RILIS PUBLIK** oleh Bima (Product QC & Launch Auditor).`,
+    ].join("\n"),
+
+    qcCertificate: {
+      score: 97,
+      status: "PASSED — APPROVED FOR LAUNCH",
+      copyVsPricing:
+        "PASS — Janji manfaat Landing Page & CTA early-bird 48 jam 100% selaras dengan tier Rp99rb/Rp149rb/Rp299rb dari Raka.",
+      socialVsFunnel:
+        "PASS — Kalender 7 hari Sora mengarahkan trafik secara konsisten dari teaser (H1-H2) ke Launch Day (H3) dan last call (H7).",
+      sopVsSla:
+        "PASS — SOP onboarding otomatis & SLA respon ≤ 30 menit dari Nadia siap menopang lonjakan trafik rilis.",
+      auditorSignOff:
+        "Seluruh 7 BAB Master Launch Kit telah diaudit menyeluruh tanpa temuan kritis. Produk dinyatakan laik edar & siap diluncurkan.",
+    },
   };
 
   return {
     phase: "COMPLETED",
     finalDeliverable: deliverable,
-    leoPrintLine: `Lex, Launch Kit untuk angle "${selectedAngle.title}" udah kelar dan lagi gue cetak di mesin fotokopi!`,
-    handoffSummary: `Launch Kit lengkap untuk "${ceoBrief}" (${selectedAngle.title}) sudah dicetak Leo dan diverifikasi Alex. Kamu bisa langsung unduh file .md atau minta revisi live lewat DM!`,
+    qcSignoffLine:
+      `Audit QC selesai — Skor 97/100 (PASSED — APPROVED FOR LAUNCH)! Copy vs Pricing, Sosmed vs Funnel, dan SOP vs SLA semua konsisten!`,
+    leoPrintLine: `Sertifikat QC Bima PASSED (97/100)! Gue balik lewat pintu tengah ke Copier West Wing buat cetak Master Launch Kit 7-BAB!`,
+    handoffSummary: `Master Launch Kit 7-BAB untuk "${ceoBrief}" telah LOLOS Sertifikat Audit QC Bima (97/100 — PASSED) dan selesai dicetak. File .md resmi siap diunduh!`,
   };
 }
 
@@ -115,37 +162,32 @@ export async function runStaticDemoChat(params: {
     text: string;
     moveTo?: "stay" | "pantry" | "desk" | "manager_handoff" | "copier";
   }>;
-  deliverablePatch: {
-    landingPageCopy?: string;
-    launchThread?: string;
-    shortVideoScript?: string;
-    revisedSection?: keyof FinalDeliverable;
+  deliverablePatch: (Partial<FinalDeliverable> & {
+    revisedSection?: DeliverableKey;
     revisionSummary?: string;
-  } | null;
+  }) | null;
 }> {
-  await sleep(550);
+  await sleep(500);
 
   if (params.mode === "AGENT_BANTER") {
     return {
       turns: [
         {
-          speaker: "manager",
-          to: "researcher",
-          text: params.ceoBrief
-            ? `May, proyek "${params.ceoBrief}" kemarin responsnya oke banget. Ada insight baru dari tren minggu ini?`
-            : "May, kopi Pantry hari ini pas banget. Ada tren produk digital yang lagi ramai minggu ini?",
+          speaker: "social",
+          to: "finance",
+          text: "Raka, gue baru lewat pintu kaca dari West Wing nih — promo early-bird 48 jam di Reels hari pertama aman buat margin kan?",
           moveTo: "stay",
         },
         {
-          speaker: "researcher",
-          to: "copywriter",
-          text: "Lagi rame banget template produktivitas + playbook AI yang langsung bisa dipakai dalam 5 menit, Le!",
+          speaker: "finance",
+          to: "social",
+          text: "Aman banget Sora! Net margin produk digital kita ~93%, tinggal kunci batas kuota promonya biar urgensi tinggi.",
           moveTo: "stay",
         },
         {
-          speaker: "copywriter",
+          speaker: "qc",
           to: "all",
-          text: "Catat! Begitu Bos CEO kasih brief baru, gue siapin hook 3 detik pertama yang bikin orang langsung berhenti scroll!",
+          text: "Mantap! Begitu draf 7-BAB siap, lempar ke meja QC East Wing biar langsung gue terbitkan Sertifikat Audit resminya.",
           moveTo: "stay",
         },
       ],
@@ -157,156 +199,99 @@ export async function runStaticDemoChat(params: {
   const lower = msg.toLowerCase();
   const hasDeliverable = Boolean(params.finalDeliverable);
 
-  // Deteksi revisi live pada mode Static Showcase GitHub Pages
   const isRevision =
     hasDeliverable &&
-    /(revisi|ubah|ganti|perbaiki|perhalus|pertajam|bikin.*lebih|buat.*lebih|lebih agresif|lebih santai|lebih relatable|poles)/i.test(
+    /(revisi|ubah|ganti|perbaiki|perhalus|pertajam|perketat|bikin.*lebih|buat.*lebih|tambah|poles)/i.test(
       lower
     );
 
   if (isRevision && params.finalDeliverable) {
-    const isVideo = /(video|skrip|script|tiktok|reels|hook)/i.test(lower);
-    const isThread = /(thread|utas|twitter|x\b)/i.test(lower);
-    const section: keyof FinalDeliverable = isVideo
-      ? "shortVideoScript"
-      : isThread
-        ? "launchThread"
-        : "landingPageCopy";
+    let section: DeliverableKey = "landingPageCopy";
+    if (params.target === "qc" || /(qc|audit|checklist|kualitas|sertifikat)/i.test(lower)) {
+      section = "qcAuditReport";
+    } else if (params.target === "finance" || /(harga|pricing|finance|keuangan|margin|promo|revenue)/i.test(lower)) {
+      section = "financePlan";
+    } else if (params.target === "social" || /(sosmed|social|kalender|konten|ig|instagram|fyp)/i.test(lower)) {
+      section = "socialMediaPlan";
+    } else if (params.target === "hr" || /(hr|sop|tim|onboarding|sla|operasional)/i.test(lower)) {
+      section = "hrOpsChecklist";
+    } else if (/(video|skrip|script|tiktok|reels|hook)/i.test(lower)) {
+      section = "shortVideoScript";
+    } else if (/(thread|utas|twitter|x\b)/i.test(lower)) {
+      section = "launchThread";
+    }
 
-    const revisedContent =
-      section === "shortVideoScript"
-        ? [
-            `**[0-5d Hook — VERSI REVISI AGRESIF]** *(Visual: Zoom cepat + efek suara whoosh)*`,
-            `"Jujur deh — sampai kapan mau rugi waktu tiap minggu cuma karena sistem kerja yang berantakan? Ini jalan pintasnya: **${params.ceoBrief || "Produk Digitalmu"}**!"`,
-            ``,
-            `**[5-35d Isi]** *(Visual: Split screen Before chaos vs After super rapi)*`,
-            `"Dalam kurang dari 3 menit, semua pekerjaan langsung tersusun otomatis. Tanpa rumus ribet, tanpa drama revisi, langsung kelihatan profesional di depan klien."`,
-            ``,
-            `**[35-45d CTA]** *(Visual: Highlight tombol link bio + countdown promo)*`,
-            `"Jangan tunggu minggu depan — klik link di bio sekarang dan ambil akses **${params.ceoBrief || "Launch Kit"}** hari ini!"`,
-          ].join("\n")
-        : section === "launchThread"
-          ? [
-              `**1/5 (Revisi Relatable)** Pernah nggak sih merasa kerja 10 jam sehari tapi ujungnya habis buat ngurus file & administrasi? Gue juga pernah di posisi itu. 🧵`,
-              ``,
-              `**2/5** Masalahnya bukan kamu kurang produktif — tapi alat kerjamu nggak dibangun buat alur kerja modern.`,
-              ``,
-              `**3/5** Itu kenapa kami racik **${params.ceoBrief || "produk ini"}**: simpel, langsung jalan, dan kerasa bedanya sejak hari pertama.`,
-              ``,
-              `**4/5** Semua checklist, template, dan sistem tracking sudah menyatu rapi — tinggal pakai tanpa pusing setup.`,
-              ``,
-              `**5/5** Kalau kamu pengen kerja lebih tenang dengan hasil lebih rapi, cek link di bio ya. Worth every second! ✨`,
-            ].join("\n")
-          : [
-              `## ${params.ceoBrief || "Produk Digital"} — Versi Revisi Lebih Halus & Persuasif`,
-              ``,
-              `**Bangun alur kerja yang tenang, rapi, dan meyakinkan klien sejak menit pertama.**`,
-              ``,
-              `- **Langsung Jalan Tanpa Hambatan:** Semua struktur penting sudah disiapkan agar kamu fokus pada karya terbaikmu.`,
-              `- **Tampilan Elegan Berkelas Studio:** Meningkatkan kepercayaan klien secara instan pada setiap interaksi.`,
-              `- **Dirancang untuk Pertumbuhan Jangka Panjang:** Skalabel mengikuti perkembangan proyek dan pendapatanmu.`,
-              ``,
-              `**Primary CTA:** Mulai Pengalaman Kerja Lebih Rapi Sekarang →`,
-            ].join("\n");
+    const revisedMap: Record<DeliverableKey, { speaker: AgentId; content: string; reply: string }> = {
+      landingPageCopy: {
+        speaker: "copywriter",
+        content: `## ${params.ceoBrief || "Produk Digital"} — Revisi Copy Lebih Tajam\n\n**Berhenti menunda pertumbuhanmu karena sistem manual yang melelahkan.**\n\n- **Hasil Terukur Hari Pertama:** Langsung pakai dalam 3 menit.\n- **Standar Agensi Profesional:** Bikin klien langsung percaya.\n- **Garansi Panduan Jelas:** Lengkap dengan checklist anti-gagal.\n\n**Primary CTA:** Mulai Lebih Efisien Sekarang →`,
+        reply: "Beres Bos! BAB 3 (Landing Page) sudah gue pertajam dan dicetak ulang ke Master Launch Kit 7-BAB (.md).",
+      },
+      launchThread: {
+        speaker: "copywriter",
+        content: `**1/5 (Revisi)** Jujur, berapa jam minggu ini hilang cuma buat kerja repetitif? 🧵\n\n**2/5** Itulah celah yang kami bereskan lewat **${params.ceoBrief || "produk ini"}**.\n\n**3/5** Simpel, terstruktur, dan langsung terasa hasilnya sejak hari pertama.\n\n**4/5** Semua panduan & template siap pakai tanpa perlu setup teknis.\n\n**5/5** Cek link bio sekarang untuk akses promo rilis terbatas! 🚀`,
+        reply: "BAB 3 (Utas Viral) sudah gue revisi lebih relatable & langsung masuk Master Launch Kit (.md), Bos!",
+      },
+      shortVideoScript: {
+        speaker: "copywriter",
+        content: `**[0-5d Hook — REVISI AGRESIF]** *(Zoom cepat + teks besar)*\n"Masih rugi waktu tiap minggu gara-gara alur kerja berantakan? Coba **${params.ceoBrief || "ini"}**!"\n\n**[5-35d Isi]** *(Split screen Before vs After)*\n"3 menit setup, semua pekerjaan rapi otomatis, langsung kelihatan pro di depan klien."\n\n**[35-45d CTA]**\n"Klik link di bio sekarang sebelum harga early-bird ditutup!"`,
+        reply: "BAB 3 (Hook Video 45d) udah gue bikin jauh lebih agresif & dicetak ulang di Copier West Wing, Bos!",
+      },
+      socialMediaPlan: {
+        speaker: "social",
+        content: `- **H1-H2:** 2x/hari video pendek pain-point + poll IG Story interaktif.\n- **H3 (Launch):** Reels 45d + Thread 5-part + Live Q&A 20 menit.\n- **H4-H5:** Demo screen-recording nyata + carousel studi kasus.\n- **H6-H7:** Testimoni pengguna + countdown penutupan bonus early-bird.`,
+        reply: "BAB 4 (Kalender Social Media) sudah gue rombak lebih padat & fokus konversi, Bos! File .md terupdate.",
+      },
+      financePlan: {
+        speaker: "finance",
+        content: `- **Flash Launch (24 Jam):** Rp89.000 (akselerasi testimoni awal).\n- **Reguler Single:** Rp149.000 | **Pro + Bonus:** Rp279.000.\n- **Proyeksi Margin Bersih:** ~92% setelah biaya gateway; target 150 buyer = **Rp26,5 Juta** bulan pertama.`,
+        reply: "BAB 5 (Pricing & Proyeksi Margin) sudah gue hitung ulang di East Wing & dicetak ulang ke file .md, Bos!",
+      },
+      hrOpsChecklist: {
+        speaker: "hr",
+        content: `- **SLA Support Dipercepat:** Maksimal 15 menit saat jam puncak rilis.\n- **Onboarding Pembeli:** Otomatisasi email akses + grup komunitas.\n- **Backup Shift & QA Harian:** Rotasi jaga tim agar bebas burnout selama pekan peluncuran.`,
+        reply: "BAB 6 (SOP Tim & SLA Operasional) sudah aku perbarui di Master Launch Kit (.md), Bos!",
+      },
+      qcAuditReport: {
+        speaker: "qc",
+        content: `- **Audit Teknis Diperketat:** Uji checkout, mobile layout, kecepatan unduh & email transaksi.\n- **Audit Klaim & Legal:** Bebas klaim berlebihan; lisensi & kebijakan refund tertulis eksplisit.\n- **Go-Live Sign-Off:** ✅ **VERIFIED & CLEARED (98/100)** oleh Bima.`,
+        reply: "BAB 7 & Sertifikat QC sudah gue perketat & diverifikasi ulang! Versi terbaru langsung masuk file .md.",
+      },
+    };
 
+    const chosen = revisedMap[section];
     return {
-      turns:
-        params.target === "manager"
-          ? [
-              {
-                speaker: "manager",
-                to: "copywriter",
-                text: `Noted Bos! Leo, tolong langsung terapkan revisi "${msg}" dan cetak ulang file .md terbaru ya.`,
-                moveTo: "desk",
-              },
-              {
-                speaker: "copywriter",
-                to: "ceo",
-                text: "Beres Bos! Revisi sudah gue poles dan cetak ulang di mesin fotokopi — file .md terbaru langsung bisa diunduh sekarang.",
-                moveTo: "copier",
-              },
-            ]
-          : [
-              {
-                speaker: "copywriter",
-                to: "ceo",
-                text: "Siap Bos! Naskahnya udah gue revisi sesuai arahan dan langsung dicetak ulang di copier — cek tab Launch Kit & file .md terbarunya ya!",
-                moveTo: "copier",
-              },
-            ],
+      turns: [{ speaker: chosen.speaker, to: "ceo", text: chosen.reply, moveTo: "copier" }],
       deliverablePatch: {
-        [section]: revisedContent,
+        [section]: chosen.content,
         revisedSection: section,
-        revisionSummary: `Revisi live (${section}) selesai diterapkan Leo dan dicetak ulang — file .md terbaru siap diunduh.`,
+        revisionSummary: `Revisi bagian ${section} selesai diperbarui & dicetak ulang ke Master Launch Kit 7-BAB (.md).`,
       },
     };
   }
 
-  // Obrolan / tanya jawab biasa per persona agent
-  if (params.target === "researcher") {
-    return {
-      turns: [
-        {
-          speaker: "researcher",
-          to: "ceo",
-          text: `Menarik banget pertanyaannya, Bos! Dari sisi psikologi pembeli, kunci utamanya ada di kejelasan hasil instan + bukti visual nyata sebelum mereka klik beli.`,
-          moveTo: "desk",
-        },
-      ],
-      deliverablePatch: null,
-    };
-  }
+  const singleReplies: Record<AgentId, string> = {
+    manager: "Siap Bos! West Wing & East Wing terkoordinasi rapi — tinggal arahkan prioritas berikutnya.",
+    researcher: "Dari data psikologi pembeli, fokus pada hasil cepat di 5 menit pertama selalu menaikkan konversi!",
+    copywriter: "Siap Bos! Gue pastikan setiap headline & CTA di BAB 3 langsung menusuk kebutuhan utama audiens.",
+    social: "Aman Bos! Gue pantau format Reels & TikTok yang retensinya paling tinggi buat BAB 4 minggu ini.",
+    finance: "Semua angka margin dan struktur tier BAB 5 aman terkendali di East Wing — siap simulasi kapan saja!",
+    hr: "Kapasitas seluruh 7 divisi lintas sayap sehat dan SOP BAB 6 siap jalan tanpa hambatan, Bos!",
+    qc: "Tenang Bos, meja QC East Wing gue jaga ketat — nggak ada produk rilis tanpa Sertifikat QC resmi!",
+  };
 
-  if (params.target === "copywriter") {
+  if (params.target !== "all") {
     return {
-      turns: [
-        {
-          speaker: "copywriter",
-          to: "ceo",
-          text: "Siap Bos! Prinsip gue simpel: 3 detik pertama harus langsung menyentil masalah terbesar audiens, baru tawarkan jalan pintas yang konkret.",
-          moveTo: "desk",
-        },
-      ],
-      deliverablePatch: null,
-    };
-  }
-
-  if (params.target === "manager") {
-    return {
-      turns: [
-        {
-          speaker: "manager",
-          to: "ceo",
-          text: params.ceoBrief
-            ? `Siap Bos! Fokus kita saat ini menjaga eksekusi "${params.ceoBrief}" tetap tajam. Kalau ada bagian yang ingin direvisi, tinggal instruksikan ke saya atau Leo.`
-            : "Siap Bos! Tim dalam kondisi prima — tinggal klik salah satu Sample Launch Mission atau masukkan brief barumu kapan pun siap.",
-          moveTo: "desk",
-        },
-      ],
+      turns: [{ speaker: params.target, to: "ceo", text: singleReplies[params.target], moveTo: "desk" }],
       deliverablePatch: null,
     };
   }
 
   return {
     turns: [
-      {
-        speaker: "manager",
-        to: "ceo",
-        text: "Siap Bos CEO! Pesan diterima — seluruh tim langsung sinkron.",
-        moveTo: "stay",
-      },
-      {
-        speaker: "researcher",
-        to: "ceo",
-        text: "Dari sisi riset pasar, gue siap bongkar insight audiens kapan pun dibutuhkan!",
-        moveTo: "stay",
-      },
-      {
-        speaker: "copywriter",
-        to: "ceo",
-        text: "Dan gue siap ubah insight Maya jadi copy & hook yang langsung konversi!",
-        moveTo: "stay",
-      },
+      { speaker: "manager", to: "ceo", text: "Siap Bos! Seluruh 7 divisi di West & East Wing langsung sinkron.", moveTo: "stay" },
+      { speaker: "social", to: "ceo", text: "Tim Creative West Wing siap tancap gas!", moveTo: "stay" },
+      { speaker: "qc", to: "ceo", text: "Dan tim Finance, HR & QC East Wing siap mengawal sampai Sertifikat Launch terbit!", moveTo: "stay" },
     ],
     deliverablePatch: null,
   };

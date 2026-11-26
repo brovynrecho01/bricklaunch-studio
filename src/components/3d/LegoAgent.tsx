@@ -11,6 +11,7 @@ import {
   useAgencyStore,
 } from "@/store/useAgencyStore";
 import { assetPath } from "@/lib/assetPath";
+import { agentLivePositions, CONNECTING_DOOR_POS } from "./agentLivePositions";
 
 interface LegoAgentProps {
   agent: AgentState;
@@ -20,6 +21,20 @@ const TROUSER_COLORS: Record<string, string> = {
   manager: "#0F172A",
   researcher: "#1E3A5F",
   copywriter: "#292524",
+  social: "#3B0764",
+  finance: "#064E3B",
+  hr: "#1E1B4B",
+  qc: "#450A0A",
+};
+
+const SIP_PHASE_OFFSETS: Record<string, number> = {
+  manager: 0,
+  researcher: 1.1,
+  copywriter: 2.2,
+  social: 3.3,
+  finance: 4.4,
+  hr: 5.5,
+  qc: 6.1,
 };
 
 const RECIPIENT_LABELS: Record<ChatRecipient, string> = {
@@ -28,6 +43,10 @@ const RECIPIENT_LABELS: Record<ChatRecipient, string> = {
   manager: "Alex",
   researcher: "Maya",
   copywriter: "Leo",
+  social: "Sora",
+  finance: "Raka",
+  hr: "Nadia",
+  qc: "Bima",
 };
 
 const STATUS_META: Record<
@@ -135,7 +154,8 @@ export function LegoAgent({ agent }: LegoAgentProps) {
       rootGroupRef.current.position.copy(currentPosRef.current);
       rootGroupRef.current.rotation.y = currentYawRef.current;
     }
-  }, []);
+    agentLivePositions[agent.id].copy(currentPosRef.current);
+  }, [agent.id]);
 
   const rig = useMemo(() => {
     const clone = gltf.scene.clone(true);
@@ -262,26 +282,58 @@ export function LegoAgent({ agent }: LegoAgentProps) {
     const bounce = bodyBounceRef.current;
     if (!root || !bounce) return;
 
-    targetVecRef.current.set(
-      agent.targetPosition[0],
-      agent.targetPosition[1],
-      agent.targetPosition[2]
-    );
+    const finalX = agent.targetPosition[0];
+    const finalY = agent.targetPosition[1];
+    const finalZ = agent.targetPosition[2];
+    const curX = currentPosRef.current.x;
+    const curZ = currentPosRef.current.z;
 
-    const dx = targetVecRef.current.x - currentPosRef.current.x;
-    const dz = targetVecRef.current.z - currentPosRef.current.z;
+    // Cross-wing waypoint routing: jika melintasi X = 0 (West Wing <-> East Wing),
+    // arahkan melalui pintu penghubung [0, 0, -0.5] terlebih dahulu agar tidak menembus partisi!
+    const crossingWestToEast = curX < -0.2 && finalX > 0.2;
+    const crossingEastToWest = curX > 0.2 && finalX < -0.2;
+
+    if (crossingWestToEast || crossingEastToWest) {
+      const distToDoor = Math.hypot(
+        curX - CONNECTING_DOOR_POS[0],
+        curZ - CONNECTING_DOOR_POS[2]
+      );
+      if (distToDoor > 0.42) {
+        targetVecRef.current.set(
+          CONNECTING_DOOR_POS[0],
+          CONNECTING_DOOR_POS[1],
+          CONNECTING_DOOR_POS[2]
+        );
+      } else {
+        // Langkah menembus ambang pintu ke sisi tujuan
+        targetVecRef.current.set(
+          crossingWestToEast ? 0.55 : -0.55,
+          0,
+          CONNECTING_DOOR_POS[2]
+        );
+      }
+    } else {
+      targetVecRef.current.set(finalX, finalY, finalZ);
+    }
+
+    const dx = targetVecRef.current.x - curX;
+    const dz = targetVecRef.current.z - curZ;
     const dist = Math.hypot(dx, dz);
+    const totalDistToFinal = Math.hypot(finalX - curX, finalZ - curZ);
 
-    const isMoving = dist > 0.06;
+    const isMoving = totalDistToFinal > 0.08;
 
     if (isMoving) {
-      const lerpAlpha = 1 - Math.exp(-3.1 * delta);
-      const stepFactor = Math.min(lerpAlpha, (3.2 * delta) / Math.max(dist, 0.001));
-      currentPosRef.current.lerp(targetVecRef.current, Math.max(stepFactor, lerpAlpha * 0.45));
+      // Kecepatan jalan stabil ~3.5 m/s agar perjalanan lintas West <-> East Wing terasa alami & responsif
+      const maxStep = 3.6 * delta;
+      if (dist > 0.001) {
+        const moveRatio = Math.min(1, maxStep / dist);
+        currentPosRef.current.lerp(targetVecRef.current, moveRatio);
+      }
 
       const moveYaw = Math.atan2(dx, dz);
       currentYawRef.current +=
-        shortestAngleDiff(currentYawRef.current, moveYaw) * Math.min(1, delta * 9);
+        shortestAngleDiff(currentYawRef.current, moveYaw) * Math.min(1, delta * 10);
     } else {
       currentPosRef.current.lerp(targetVecRef.current, Math.min(1, delta * 10));
       currentYawRef.current +=
@@ -291,6 +343,7 @@ export function LegoAgent({ agent }: LegoAgentProps) {
 
     root.position.copy(currentPosRef.current);
     root.rotation.y = currentYawRef.current;
+    agentLivePositions[agent.id].copy(currentPosRef.current);
 
     const { legLPivot, legRPivot, armLPivot, armRPivot, coffeeGroup, dossierGroup } = rig;
     const smooth = Math.min(1, delta * 12);
@@ -332,8 +385,7 @@ export function LegoAgent({ agent }: LegoAgentProps) {
       targetBounceY = -0.14 + Math.sin(t * 3.0) * 0.006;
     } else if (agent.status === "IDLE_PANTRY" && agent.standbyActivity === "pantry") {
       // Santai pegang kopi di Pantry Bar
-      const phaseOffset =
-        agent.id === "researcher" ? 2.1 : agent.id === "copywriter" ? 4.2 : 0;
+      const phaseOffset = SIP_PHASE_OFFSETS[agent.id] ?? 0;
       const sip = Math.max(0, Math.sin(t * 1.1 + phaseOffset));
       targetArmR = -0.82 - sip * 0.25;
       targetArmL = isSpeaking
