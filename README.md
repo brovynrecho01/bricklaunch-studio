@@ -17,7 +17,7 @@
 
 **BrickLaunch Studio** adalah aplikasi web **Autonomous Digital Product Launch Agency** yang menggabungkan **simulasi kantor virtual 3D interaktif (WebGL / Blender `.glb`)** dengan **orkestrasi multi-agent AI nyata berbasis Google Gemini API**.
 
-Sebagai **Human CEO**, kamu cukup memasukkan ide produk digital mentah — lalu saksikan 3 karakter Lego minifigure AI (**Alex**, **Maya**, dan **Leo**) berjalan, duduk di kursi kerja, berdiskusi melalui balon awan pesan 3D, meminta persetujuanmu di Gerbang ACC (**Human-in-the-Loop**), menerima revisi langsung lewat DM/Chat, hingga mencetak **Launch Kit Markdown (`.md`)** di mesin fotokopi kantor.
+Sebagai **Human CEO**, kamu cukup memasukkan ide produk digital mentah — lalu saksikan 7 karakter Lego minifigure AI (**Alex**, **Maya**,**Sora**,**Raka**,**Bima**, **Nadia** dan **Leo**) berjalan, duduk di kursi kerja, berdiskusi melalui balon awan pesan 3D, meminta persetujuanmu di Gerbang ACC (**Human-in-the-Loop**), menerima revisi langsung lewat DM/Chat, hingga mencetak **Launch Kit Markdown (`.md`)** di mesin fotokopi kantor.
 
 ---
 
