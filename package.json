@@ -2,6 +2,8 @@
   "name": "bricklaunch-studio",
   "version": "1.0.0",
   "private": true,
+  "author": "Ahmad Syafii (AI System Designer)",
+  "license": "SEE LICENSE IN LICENSE",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

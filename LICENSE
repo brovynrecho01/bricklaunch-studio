@@ -1,0 +1,49 @@
+BRICKLAUNCH STUDIO — PROPRIETARY SOURCE-AVAILABLE & COPYRIGHT PROTECTION LICENSE
+
+Copyright (c) 2026 Ahmad Syafii — AI System Designer (Author).
+All Rights Reserved.
+
+1. OWNERSHIP & PROTECTED INTELLECTUAL PROPERTY
+This repository ("BrickLaunch Studio") and all of its contents—including, without
+limitation, all source code, multi-agent orchestration pipelines, Agent Behavioral
+Smart Contracts (`src/lib/agents/behavioralContracts.ts`), 3D spatial choreography
+systems, custom Blender 3D models (`public/models/*.glb`), Brand Orthography, logos,
+icons (`public/brand/*`, `docs/assets/brand-orthography.jpg`), UI/UX design, and
+documentation—are the exclusive intellectual property of Ahmad Syafii (AI System
+Designer).
+
+2. PERMITTED USE (PORTFOLIO REVIEW & PERSONAL EVALUATION ONLY)
+Permission is hereby granted, free of charge, solely to view this repository, inspect
+the source code, and run the software locally for:
+  (a) Technical evaluation, portfolio review, or recruitment assessment; and
+  (b) Personal, non-commercial study and educational inspection.
+
+Any permitted reference, citation, or showcase screenshot MUST visibly retain full
+attribution to the original author:
+  "BrickLaunch Studio — Designed & Engineered by Ahmad Syafii (AI System Designer)"
+
+3. STRICTLY PROHIBITED USES
+Without prior express written authorization or a separate commercial license from
+Ahmad Syafii, you may NOT:
+  (a) Use, deploy, host, or monetize this software or any derivative work for
+      commercial purposes, client work, SaaS offerings, or paid agency services;
+  (b) Redistribute, republish, sublicense, sell, rent, or transfer copies of the
+      codebase, 3D `.glb` assets, brand marks, or Behavioral Smart Contracts;
+  (c) Claim authorship, white-label the project, or remove, obscure, or alter any
+      copyright notices, author credits, or brand attributions;
+  (d) Extract or copy the custom 3D `.glb` assets, logo orthography, or prompt
+      smart contracts into competing commercial products or templates.
+
+4. COMMERCIAL LICENSING & PERMISSIONS
+For commercial licensing, enterprise collaboration, custom AI multi-agent system
+architecture, or partnership inquiries, please contact the Author:
+  Author : Ahmad Syafii — AI System Designer
+  GitHub : https://github.com/brovynrecho01
+  Email  : broahmadsyaf@gmail.com
+
+5. DISCLAIMER OF WARRANTY
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHOR OR COPYRIGHT
+HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM, OUT OF,
+OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

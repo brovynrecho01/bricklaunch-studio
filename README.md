@@ -5,6 +5,8 @@
 <h3 align="center">From Raw Idea to Launch-Ready Digital Product — Orchestrated by Autonomous Agents.</h3>
 
 <p align="center">
+  <img src="https://img.shields.io/badge/Author-Ahmad_Syafii_%7C_AI_System_Designer-F04A1A?style=flat-square" alt="Author Ahmad Syafii" />
+  <img src="https://img.shields.io/badge/License-Proprietary_All_Rights_Reserved-141517?style=flat-square" alt="License" />
   <img src="https://img.shields.io/badge/Next.js-15.5-000000?style=flat-square&logo=nextdotjs" alt="Next.js" />
   <img src="https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=000" alt="React 19" />
   <img src="https://img.shields.io/badge/Three.js-WebGL_3D-049EF4?style=flat-square&logo=threedotjs" alt="Three.js" />
@@ -284,3 +286,17 @@ Untuk menjalankan **real-time Gemini API** (`/api/orchestrate` & `/api/chat`) di
 2. Import proyek di dashboard **Vercel**.
 3. Tambahkan Environment Variable `GEMINI_API_KEY` pada **Project Settings → Environment Variables**.
 4. Klik **Deploy** — aplikasi langsung berjalan penuh dengan orkestrasi server-side Gemini API.
+
+---
+
+## Author, Hak Cipta & Lisensi Perlindungan Karya
+
+- **Author / Creator:** **Ahmad Syafii** — *AI System Designer*
+- **GitHub:** [@brovynrecho01](https://github.com/brovynrecho01)
+- **Hak Cipta:** `Copyright © 2026 Ahmad Syafii — AI System Designer. All Rights Reserved.`
+- **Lisensi:** **Proprietary Source-Available & Copyright Protection License** — lihat dokumen lengkap pada [`LICENSE`](./LICENSE).
+
+### Ringkasan Perlindungan Karya
+- **Diperbolehkan (Dengan Atribusi Penuh):** Meninjau kode sumber, mengevaluasi untuk keperluan portofolio/rekrutmen, serta menjalankan secara lokal untuk studi non-komersial dengan tetap mencantumkan kredit **Ahmad Syafii — AI System Designer**.
+- **Dilarang Tanpa Izin Tertulis:** Penggunaan komersial, penjualan ulang (*resale*), *white-labeling* untuk SaaS/agensi, distribusi ulang kode, ekstraksi aset 3D Blender (`.glb`), identitas brand/ortografis logo, maupun **Agent Behavioral Smart Contracts** (`src/lib/agents/behavioralContracts.ts`) tanpa izin tertulis resmi dari pencipta.
+- Untuk keperluan lisensi komersial, kolaborasi enterprise, atau pengembangan sistem multi-agent AI kustom, hubungi langsung **Ahmad Syafii** (`broahmadsyaf@gmail.com`).
