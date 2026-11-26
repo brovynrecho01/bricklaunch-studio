@@ -1,0 +1,8 @@
+node_modules
+.next
+out
+.api_stash_for_static_export
+*.tsbuildinfo
+.env.local
+.env
+npm-debug.log*

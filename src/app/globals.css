@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+@layer base {
+  html,
+  body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-space-grotesk), var(--font-inter), system-ui, sans-serif;
+  }
+}
+
+/* Subtle glassmorphic scrollbars for telemetry logs & deliverable drawer */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.5);
+}

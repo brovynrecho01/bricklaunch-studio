@@ -1,0 +1,32 @@
+{
+  "name": "bricklaunch-studio",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "build:pages": "node scripts/build-pages.mjs",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@google/genai": "latest",
+    "@react-three/drei": "^10.0.8",
+    "@react-three/fiber": "^9.1.2",
+    "lucide-react": "^0.511.0",
+    "next": "^15.3.2",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "three": "^0.176.0",
+    "zustand": "^5.0.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.7",
+    "@types/node": "^22.15.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@types/three": "^0.176.0",
+    "tailwindcss": "^4.1.7",
+    "typescript": "^5.8.3"
+  }
+}

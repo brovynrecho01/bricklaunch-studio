@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 100" width="420" height="100" role="img" aria-label="BrickLaunch Studio Horizontal Logo">
+  <defs>
+    <linearGradient id="blh-orange" x1="0%" y1="15%" x2="100%" y2="85%">
+      <stop offset="0%" stop-color="#FF521B" />
+      <stop offset="55%" stop-color="#E84118" />
+      <stop offset="100%" stop-color="#B93110" />
+    </linearGradient>
+    <linearGradient id="blh-arrow" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FF5B22" />
+      <stop offset="100%" stop-color="#D93813" />
+    </linearGradient>
+  </defs>
+  <rect width="420" height="100" rx="18" fill="#141517" />
+
+  <!-- Brand Mark (Left) -->
+  <g transform="translate(22, 11) scale(1.22)">
+    <rect x="6" y="42.5" width="3.4" height="2" rx="0.5" fill="#FF521B" />
+    <rect x="14.2" y="42.5" width="3.4" height="2" rx="0.5" fill="#FF521B" />
+    <rect x="4" y="44.2" width="15.2" height="9.6" rx="1" fill="url(#blh-orange)" />
+
+    <rect x="22.4" y="42.5" width="3.4" height="2" rx="0.5" fill="#E84118" />
+    <rect x="30.6" y="42.5" width="3.4" height="2" rx="0.5" fill="#E84118" />
+    <rect x="20.6" y="44.2" width="15.2" height="9.6" rx="1" fill="url(#blh-orange)" />
+
+    <rect x="39" y="42.5" width="3.4" height="2" rx="0.5" fill="#C93512" />
+    <rect x="46.4" y="42.5" width="3.4" height="2" rx="0.5" fill="#B93110" />
+    <rect x="37.2" y="44.2" width="14.5" height="9.6" rx="1" fill="url(#blh-orange)" />
+
+    <rect x="13" y="31.2" width="3.4" height="2" rx="0.5" fill="#FF521B" />
+    <rect x="21.2" y="31.2" width="3.4" height="2" rx="0.5" fill="#F04619" />
+    <rect x="11.2" y="32.9" width="15" height="9.6" rx="1" fill="url(#blh-orange)" />
+
+    <polygon points="27.8,32.9 37,32.9 27.8,41.8" fill="#E33E16" />
+    <polygon points="30.6,42.5 42.5,42.5 42.5,36 39.2,34.1" fill="#C63512" />
+
+    <rect x="20" y="20.6" width="3.4" height="2" rx="0.5" fill="#FF521B" />
+    <rect x="26.8" y="20.6" width="3.4" height="2" rx="0.5" fill="#F04619" />
+    <path d="M18.4 22.3 H32.2 L28 31.6 H18.4 Z" fill="url(#blh-orange)" />
+
+    <path d="M33.2 25 L41.8 16.4 L37.3 12.6 L52.2 9.2 L48.8 24.1 L45 19.7 L36.7 28.2 Z" fill="url(#blh-arrow)" />
+    <polygon points="29.8,29.3 33.1,26.3 35.6,28.9 32.4,31.9" fill="#FF5B22" />
+    <polygon points="30.8,19.1 38.4,17.4 32.6,23.1" fill="#FF521B" />
+    <polygon points="45.4,25.2 46.8,34.2 40.2,32.6" fill="#D93813" />
+  </g>
+
+  <!-- Horizontal Typography Lockup (Right) -->
+  <text x="112" y="57" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="38" font-weight="800" letter-spacing="-0.8">
+    <tspan fill="#FFFFFF">Brick</tspan><tspan fill="#F04A1A">Launch</tspan>
+  </text>
+  <text x="387" y="79" text-anchor="end" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="14" font-weight="400" letter-spacing="5.8" fill="#FFFFFF">
+    STUDIO
+  </text>
+</svg>
